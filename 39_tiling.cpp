@@ -2,111 +2,58 @@
 and may not be redistributed without written permission.*/
 
 //Using SDL, SDL_image, standard IO, strings, and file streams
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <string>
 #include <fstream>
+#include "texture.h"
+#include "timer.h"
+#include "tile.h"
+#include "functions.h"
+#include <iostream>
+
 
 //Screen dimension constants
+#include <sstream>
+const int SCREEN_FPS = 60;
+const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
+
+
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
 
 
 //The dimensions of the level
-const int LEVEL_WIDTH = 1280;
-const int LEVEL_HEIGHT = 960;
+const int LEVEL_WIDTH = 4096;
+const int LEVEL_HEIGHT = 4096;
 
 //Tile constants
-const int TILE_WIDTH = 80;
-const int TILE_HEIGHT = 80;
-const int TOTAL_TILES = 192;
-const int TOTAL_TILE_SPRITES = 12;
+const int TILE_WIDTH = 32;
+const int TILE_HEIGHT = 32;
+const int TOTAL_TILES = 16384;
+// const int TOTAL_TILE_SPRITES = 12;
 
 //The different tile sprites
-const int TILE_RED = 0;
-const int TILE_GREEN = 1;
-const int TILE_BLUE = 2;
-const int TILE_CENTER = 3;
-const int TILE_TOP = 4;
-const int TILE_TOPRIGHT = 5;
-const int TILE_RIGHT = 6;
-const int TILE_BOTTOMRIGHT = 7;
-const int TILE_BOTTOM = 8;
-const int TILE_BOTTOMLEFT = 9;
-const int TILE_LEFT = 10;
-const int TILE_TOPLEFT = 11;
+// const int TILE_RED = 0;
+// const int TILE_GREEN = 1;
+// const int TILE_BLUE = 2;
+// const int TILE_CENTER = 3;
+// const int TILE_TOP = 4;
+// const int TILE_TOPRIGHT = 5;
+// const int TILE_RIGHT = 6;
+// const int TILE_BOTTOMRIGHT = 7;
+// const int TILE_BOTTOM = 8;
+// const int TILE_BOTTOMLEFT = 9;
+// const int TILE_LEFT = 10;
+// const int TILE_TOPLEFT = 11;
 
 //Texture wrapper class
-class LTexture
-{
-	public:
-		//Initializes variables
-		LTexture();
 
-		//Deallocates memory
-		~LTexture();
-
-		//Loads image at specified path
-		bool loadFromFile( std::string path );
-		
-		#if defined(SDL_TTF_MAJOR_VERSION)
-		//Creates image from font string
-		bool loadFromRenderedText( std::string textureText, SDL_Color textColor );
-		#endif
-
-		//Deallocates texture
-		void free();
-
-		//Set color modulation
-		void setColor( Uint8 red, Uint8 green, Uint8 blue );
-
-		//Set blending
-		void setBlendMode( SDL_BlendMode blending );
-
-		//Set alpha modulation
-		void setAlpha( Uint8 alpha );
-		
-		//Renders texture at given point
-		void render( int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE );
-
-		//Gets image dimensions
-		int getWidth();
-		int getHeight();
-
-	private:
-		//The actual hardware texture
-		SDL_Texture* mTexture;
-
-		//Image dimensions
-		int mWidth;
-		int mHeight;
-};
 
 //The tile
-class Tile
-{
-    public:
-		//Initializes position and type
-		Tile( int x, int y, int tileType );
 
-		//Shows the tile
-		void render( SDL_Rect& camera );
-
-		//Get the tile type
-		int getType();
-
-		//Get the collision box
-		SDL_Rect getBox();
-
-    private:
-		//The attributes of the tile
-		SDL_Rect mBox;
-
-		//The tile type
-		int mType;
-};
 
 //The dot that will move around on the screen
 class Dot
@@ -169,184 +116,11 @@ SDL_Renderer* gRenderer = NULL;
 //Scene textures
 LTexture gDotTexture;
 LTexture gTileTexture;
-SDL_Rect gTileClips[ TOTAL_TILE_SPRITES ];
 
-LTexture::LTexture()
-{
-	//Initialize
-	mTexture = NULL;
-	mWidth = 0;
-	mHeight = 0;
-}
+// SDL_Rect gTileClips[ TOTAL_TILE_SPRITES ];
 
-LTexture::~LTexture()
-{
-	//Deallocate
-	free();
-}
 
-bool LTexture::loadFromFile( std::string path )
-{
-	//Get rid of preexisting texture
-	free();
 
-	//The final texture
-	SDL_Texture* newTexture = NULL;
-
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-	if( loadedSurface == NULL )
-	{
-		printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
-	}
-	else
-	{
-		//Color key image
-		SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, 0, 0xFF, 0xFF ) );
-
-		//Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
-		if( newTexture == NULL )
-		{
-			printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-		}
-		else
-		{
-			//Get image dimensions
-			mWidth = loadedSurface->w;
-			mHeight = loadedSurface->h;
-		}
-
-		//Get rid of old loaded surface
-		SDL_FreeSurface( loadedSurface );
-	}
-
-	//Return success
-	mTexture = newTexture;
-	return mTexture != NULL;
-}
-
-#if defined(SDL_TTF_MAJOR_VERSION)
-bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColor )
-{
-	//Get rid of preexisting texture
-	free();
-
-	//Render text surface
-	SDL_Surface* textSurface = TTF_RenderText_Solid( gFont, textureText.c_str(), textColor );
-	if( textSurface != NULL )
-	{
-		//Create texture from surface pixels
-        mTexture = SDL_CreateTextureFromSurface( gRenderer, textSurface );
-		if( mTexture == NULL )
-		{
-			printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
-		}
-		else
-		{
-			//Get image dimensions
-			mWidth = textSurface->w;
-			mHeight = textSurface->h;
-		}
-
-		//Get rid of old surface
-		SDL_FreeSurface( textSurface );
-	}
-	else
-	{
-		printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
-	}
-
-	
-	//Return success
-	return mTexture != NULL;
-}
-#endif
-
-void LTexture::free()
-{
-	//Free texture if it exists
-	if( mTexture != NULL )
-	{
-		SDL_DestroyTexture( mTexture );
-		mTexture = NULL;
-		mWidth = 0;
-		mHeight = 0;
-	}
-}
-
-void LTexture::setColor( Uint8 red, Uint8 green, Uint8 blue )
-{
-	//Modulate texture rgb
-	SDL_SetTextureColorMod( mTexture, red, green, blue );
-}
-
-void LTexture::setBlendMode( SDL_BlendMode blending )
-{
-	//Set blending function
-	SDL_SetTextureBlendMode( mTexture, blending );
-}
-		
-void LTexture::setAlpha( Uint8 alpha )
-{
-	//Modulate texture alpha
-	SDL_SetTextureAlphaMod( mTexture, alpha );
-}
-
-void LTexture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip )
-{
-	//Set rendering space and render to screen
-	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-
-	//Set clip rendering dimensions
-	if( clip != NULL )
-	{
-		renderQuad.w = clip->w;
-		renderQuad.h = clip->h;
-	}
-
-	//Render to screen
-	SDL_RenderCopyEx( gRenderer, mTexture, clip, &renderQuad, angle, center, flip );
-}
-
-int LTexture::getWidth()
-{
-	return mWidth;
-}
-
-int LTexture::getHeight()
-{
-	return mHeight;
-}
-
-Tile::Tile( int x, int y, int tileType )
-{
-    //Get the offsets
-    mBox.x = x;
-    mBox.y = y;
-
-    //Set the collision box
-    mBox.w = TILE_WIDTH;
-    mBox.h = TILE_HEIGHT;
-
-    //Get the tile type
-    mType = tileType;
-}
-
-void Tile::render( SDL_Rect& camera )
-{
-    //If the tile is on screen
-    if( checkCollision( camera, mBox ) )
-    {
-        //Show the tile
-        gTileTexture.render( mBox.x - camera.x, mBox.y - camera.y, &gTileClips[ mType ] );
-    }
-}
-
-int Tile::getType()
-{
-    return mType;
-}
 
 SDL_Rect Tile::getBox()
 {
@@ -445,7 +219,7 @@ void Dot::setCamera( SDL_Rect& camera )
 void Dot::render( SDL_Rect& camera )
 {
     //Show the dot
-	gDotTexture.render( mBox.x - camera.x, mBox.y - camera.y );
+	gDotTexture.render(gRenderer, mBox.x - camera.x, mBox.y - camera.y );
 }
 
 bool init()
@@ -508,14 +282,14 @@ bool loadMedia( Tile* tiles[] )
 	bool success = true;
 
 	//Load dot texture
-	if( !gDotTexture.loadFromFile( "39_tiling/dot.bmp" ) )
+	if( !gDotTexture.loadFromFile( "dot.bmp" ,gRenderer) )
 	{
 		printf( "Failed to load dot texture!\n" );
 		success = false;
 	}
 
 	//Load tile texture
-	if( !gTileTexture.loadFromFile( "39_tiling/tiles.png" ) )
+	if( !gTileTexture.loadFromFile( "tileset.png" ,gRenderer) )
 	{
 		printf( "Failed to load tile set texture!\n" );
 		success = false;
@@ -607,12 +381,13 @@ bool setTiles( Tile* tiles[] )
 {
 	//Success flag
 	bool tilesLoaded = true;
+	char trash ; 
 
     //The tile offsets
     int x = 0, y = 0;
 
     //Open the map
-    std::ifstream map( "39_tiling/lazy.map" );
+    std::ifstream map( "victorian-preview-array.txt" );
 
     //If the map couldn't be loaded
     if( map.fail() )
@@ -623,25 +398,26 @@ bool setTiles( Tile* tiles[] )
 	else
 	{
 		//Initialize the tiles
-		for( int i = 0; i < TOTAL_TILES; ++i )
+		for( int i = 0; i < TOTAL_TILES; i++ )
 		{
 			//Determines what kind of tile will be made
 			int tileType = -1;
 
 			//Read tile from map file
 			map >> tileType;
+			map>>trash ;
 
 			//If the was a problem in reading the map
 			if( map.fail() )
 			{
 				//Stop loading map
-				printf( "Error loading map: Unexpected end of file!\n" );
+				std::cout<<"Error loading map: Unexpected end of file!\n "<<i ;
 				tilesLoaded = false;
 				break;
 			}
 
 			//If the number is a valid tile number
-			if( ( tileType >= 0 ) && ( tileType < TOTAL_TILE_SPRITES ) )
+			if( ( tileType >= 0 ) ) //originally there was tileType< TotalTileSPrites 
 			{
 				tiles[ i ] = new Tile( x, y, tileType );
 			}
@@ -669,68 +445,68 @@ bool setTiles( Tile* tiles[] )
 		}
 		
 		//Clip the sprite sheet
-		if( tilesLoaded )
-		{
-			gTileClips[ TILE_RED ].x = 0;
-			gTileClips[ TILE_RED ].y = 0;
-			gTileClips[ TILE_RED ].w = TILE_WIDTH;
-			gTileClips[ TILE_RED ].h = TILE_HEIGHT;
+		// if( tilesLoaded )
+		// {
+		// 	gTileClips[ TILE_RED ].x = 0;
+		// 	gTileClips[ TILE_RED ].y = 0;
+		// 	gTileClips[ TILE_RED ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_RED ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_GREEN ].x = 0;
-			gTileClips[ TILE_GREEN ].y = 80;
-			gTileClips[ TILE_GREEN ].w = TILE_WIDTH;
-			gTileClips[ TILE_GREEN ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_GREEN ].x = 0;
+		// 	gTileClips[ TILE_GREEN ].y = 80;
+		// 	gTileClips[ TILE_GREEN ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_GREEN ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_BLUE ].x = 0;
-			gTileClips[ TILE_BLUE ].y = 160;
-			gTileClips[ TILE_BLUE ].w = TILE_WIDTH;
-			gTileClips[ TILE_BLUE ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_BLUE ].x = 0;
+		// 	gTileClips[ TILE_BLUE ].y = 160;
+		// 	gTileClips[ TILE_BLUE ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_BLUE ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_TOPLEFT ].x = 80;
-			gTileClips[ TILE_TOPLEFT ].y = 0;
-			gTileClips[ TILE_TOPLEFT ].w = TILE_WIDTH;
-			gTileClips[ TILE_TOPLEFT ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_TOPLEFT ].x = 80;
+		// 	gTileClips[ TILE_TOPLEFT ].y = 0;
+		// 	gTileClips[ TILE_TOPLEFT ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_TOPLEFT ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_LEFT ].x = 80;
-			gTileClips[ TILE_LEFT ].y = 80;
-			gTileClips[ TILE_LEFT ].w = TILE_WIDTH;
-			gTileClips[ TILE_LEFT ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_LEFT ].x = 80;
+		// 	gTileClips[ TILE_LEFT ].y = 80;
+		// 	gTileClips[ TILE_LEFT ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_LEFT ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_BOTTOMLEFT ].x = 80;
-			gTileClips[ TILE_BOTTOMLEFT ].y = 160;
-			gTileClips[ TILE_BOTTOMLEFT ].w = TILE_WIDTH;
-			gTileClips[ TILE_BOTTOMLEFT ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_BOTTOMLEFT ].x = 80;
+		// 	gTileClips[ TILE_BOTTOMLEFT ].y = 160;
+		// 	gTileClips[ TILE_BOTTOMLEFT ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_BOTTOMLEFT ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_TOP ].x = 160;
-			gTileClips[ TILE_TOP ].y = 0;
-			gTileClips[ TILE_TOP ].w = TILE_WIDTH;
-			gTileClips[ TILE_TOP ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_TOP ].x = 160;
+		// 	gTileClips[ TILE_TOP ].y = 0;
+		// 	gTileClips[ TILE_TOP ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_TOP ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_CENTER ].x = 160;
-			gTileClips[ TILE_CENTER ].y = 80;
-			gTileClips[ TILE_CENTER ].w = TILE_WIDTH;
-			gTileClips[ TILE_CENTER ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_CENTER ].x = 160;
+		// 	gTileClips[ TILE_CENTER ].y = 80;
+		// 	gTileClips[ TILE_CENTER ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_CENTER ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_BOTTOM ].x = 160;
-			gTileClips[ TILE_BOTTOM ].y = 160;
-			gTileClips[ TILE_BOTTOM ].w = TILE_WIDTH;
-			gTileClips[ TILE_BOTTOM ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_BOTTOM ].x = 160;
+		// 	gTileClips[ TILE_BOTTOM ].y = 160;
+		// 	gTileClips[ TILE_BOTTOM ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_BOTTOM ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_TOPRIGHT ].x = 240;
-			gTileClips[ TILE_TOPRIGHT ].y = 0;
-			gTileClips[ TILE_TOPRIGHT ].w = TILE_WIDTH;
-			gTileClips[ TILE_TOPRIGHT ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_TOPRIGHT ].x = 240;
+		// 	gTileClips[ TILE_TOPRIGHT ].y = 0;
+		// 	gTileClips[ TILE_TOPRIGHT ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_TOPRIGHT ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_RIGHT ].x = 240;
-			gTileClips[ TILE_RIGHT ].y = 80;
-			gTileClips[ TILE_RIGHT ].w = TILE_WIDTH;
-			gTileClips[ TILE_RIGHT ].h = TILE_HEIGHT;
+		// 	gTileClips[ TILE_RIGHT ].x = 240;
+		// 	gTileClips[ TILE_RIGHT ].y = 80;
+		// 	gTileClips[ TILE_RIGHT ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_RIGHT ].h = TILE_HEIGHT;
 
-			gTileClips[ TILE_BOTTOMRIGHT ].x = 240;
-			gTileClips[ TILE_BOTTOMRIGHT ].y = 160;
-			gTileClips[ TILE_BOTTOMRIGHT ].w = TILE_WIDTH;
-			gTileClips[ TILE_BOTTOMRIGHT ].h = TILE_HEIGHT;
-		}
+		// 	gTileClips[ TILE_BOTTOMRIGHT ].x = 240;
+		// 	gTileClips[ TILE_BOTTOMRIGHT ].y = 160;
+		// 	gTileClips[ TILE_BOTTOMRIGHT ].w = TILE_WIDTH;
+		// 	gTileClips[ TILE_BOTTOMRIGHT ].h = TILE_HEIGHT;
+		// }
 	}
 
     //Close the file
@@ -740,13 +516,16 @@ bool setTiles( Tile* tiles[] )
     return tilesLoaded;
 }
 
-bool touchesWall( SDL_Rect box, Tile* tiles[] )
+bool touchesWall( SDL_Rect box, Tile* tiles[] ) // this is totally wrong as of now  , I just return a plain true , 
 {
+	return false; 
     //Go through the tiles
     for( int i = 0; i < TOTAL_TILES; ++i )
     {
         //If the tile is a wall type tile
-        if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
+		//    if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
+        if( ( tiles[ i ]->getType() >= 12 ) && ( tiles[ i ]->getType() <= 12 ) )
+		//isse upar wali line thi pehle check karne ke liye ab ye kardi faltu mein 
         {
             //If the collision box touches the wall tile
             if( checkCollision( box, tiles[ i ]->getBox() ) )
@@ -791,9 +570,24 @@ int main( int argc, char* args[] )
 			//Level camera
 			SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
+//The frames per second timer
+			LTimer fpsTimer;
+
+			//The frames per second cap timer
+			LTimer capTimer;
+
+			//In memory text stream
+			std::stringstream timeText;
+
+			//Start counting frames per second
+			int countedFrames = 0;
+			fpsTimer.start();
+
 			//While application is running
 			while( !quit )
 			{
+				//Start cap timer
+				capTimer.start();
 				//Handle events on queue
 				while( SDL_PollEvent( &e ) != 0 )
 				{
@@ -812,13 +606,13 @@ int main( int argc, char* args[] )
 				dot.setCamera( camera );
 
 				//Clear screen
-				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				SDL_SetRenderDrawColor( gRenderer, 0x1F, 0x88, 0xFF, 0xFF );
 				SDL_RenderClear( gRenderer );
 
 				//Render level
 				for( int i = 0; i < TOTAL_TILES; ++i )
 				{
-					tileSet[ i ]->render( camera );
+					tileSet[ i ]->render( gRenderer, camera, &gTileTexture );
 				}
 
 				//Render dot
@@ -826,6 +620,17 @@ int main( int argc, char* args[] )
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );
+
+				 ++countedFrames;
+
+				//If frame finished early
+				// int frameTicks = capTimer.getTicks();
+				// if( frameTicks < SCREEN_TICK_PER_FRAME )
+				// {
+				// 	//Wait remaining time
+				// 	SDL_Delay( SCREEN_TICK_PER_FRAME - frameTicks );
+				// }
+
 			}
 		}
 		
