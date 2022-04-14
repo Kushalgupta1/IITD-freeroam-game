@@ -289,7 +289,7 @@ bool loadMedia( Tile* tiles[] )
 	}
 
 	//Load tile texture
-	if( !gTileTexture.loadFromFile( "tileset.png" ,gRenderer) )
+	if( !gTileTexture.loadFromFile( "mytileset.png" ,gRenderer) )
 	{
 		printf( "Failed to load tile set texture!\n" );
 		success = false;
@@ -387,7 +387,7 @@ bool setTiles( Tile* tiles[] )
     int x = 0, y = 0;
 
     //Open the map
-    std::ifstream map( "victorian-preview-array.txt" );
+    std::ifstream map( "newmap.txt" );
 
     //If the map couldn't be loaded
     if( map.fail() )
@@ -521,13 +521,13 @@ bool touchesWall( SDL_Rect box, Tile* tiles[] ) // this is totally wrong as of n
 	return false; 
     //Go through the tiles
     for( int i = 0; i < TOTAL_TILES; ++i )
-    {
-        //If the tile is a wall type tile
-		//    if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
+    { 
+        //If the tile is a wall type tile 
+		 //    if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
         if( ( tiles[ i ]->getType() >= 12 ) && ( tiles[ i ]->getType() <= 12 ) )
 		//isse upar wali line thi pehle check karne ke liye ab ye kardi faltu mein 
         {
-            //If the collision box touches the wall tile
+            //If the collision box touches  the wall tile
             if( checkCollision( box, tiles[ i ]->getBox() ) )
             {
                 return true;

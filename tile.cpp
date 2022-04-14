@@ -29,8 +29,9 @@ Tile::Tile( int x, int y, int tileType )
 void Tile::render( SDL_Renderer* gRenderer ,  SDL_Rect& camera ,LTexture *gTileTexture)
 {
     //If the tile is on screen
-    int tyleX = 32*(mType%10) ; 
-    int tyleY = 32*(mType/10) ; 
+    int tyleX = 32*(mType%65) ; 
+    int tyleY = (mType/65) ; 
+     tyleY = 32*tyleY;
 
     SDL_Rect renderQuad = { tyleX, tyleY, mBox.w, mBox.h };
     if( myfunctions.checkCollision( camera, mBox ) )
