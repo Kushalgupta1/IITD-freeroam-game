@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string>
 #include <fstream>
+#include <SDL2/SDL_ttf.h>
 #include"texture.h"
 
 LTexture::LTexture()
@@ -60,8 +61,9 @@ bool LTexture::loadFromFile( std::string path , SDL_Renderer*  gRenderer)
 	return mTexture != NULL;
 }
 
+
 #if defined(SDL_TTF_MAJOR_VERSION)
-bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColor )
+bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColor , TTF_Font* gFont , SDL_Renderer* gRenderer)
 {
 	//Get rid of preexisting texture
 	free();
@@ -74,7 +76,7 @@ bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColo
         mTexture = SDL_CreateTextureFromSurface( gRenderer, textSurface );
 		if( mTexture == NULL )
 		{
-			printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
+			printf( "Unable to create texture from rendered text! SDL Error: %s %s\n", textSurface, SDL_GetError() );
 		}
 		else
 		{
@@ -127,7 +129,7 @@ void LTexture::setAlpha( Uint8 alpha )
 	SDL_SetTextureAlphaMod( mTexture, alpha );
 }
 
-void LTexture::render( SDL_Renderer*  gRenderer,int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip  )
+void LTexture::render( SDL_Renderer*  gRenderer,int x, int y,  int resizex , int resizey,SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip  )
 {
 	//Set rendering space and render to screen
 	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
@@ -137,6 +139,10 @@ void LTexture::render( SDL_Renderer*  gRenderer,int x, int y, SDL_Rect* clip, do
 	{
 		renderQuad.w = clip->w;
 		renderQuad.h = clip->h;
+	}
+	if(resizex!=0 && resizey!=0){
+		renderQuad.w = resizex ; 
+		renderQuad.h = resizey;
 	}
 
 	//Render to screen
@@ -152,4 +158,5 @@ int LTexture::getHeight()
 {
 	return mHeight;
 }
+
 

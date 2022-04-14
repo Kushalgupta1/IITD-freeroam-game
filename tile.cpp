@@ -37,11 +37,17 @@ void Tile::render( SDL_Renderer* gRenderer ,  SDL_Rect& camera ,LTexture *gTileT
     if( myfunctions.checkCollision( camera, mBox ) )
     {
         //Show the tile
-        (*gTileTexture).render( gRenderer,mBox.x - camera.x, mBox.y - camera.y, &renderQuad );
+        (*gTileTexture).render( gRenderer,mBox.x - camera.x, mBox.y - camera.y, 0,0,&renderQuad );
     }
 }
 
 int Tile::getType()
 {
     return mType;
+}
+
+
+SDL_Rect Tile::getBox()
+{
+    return mBox;
 }

@@ -1,0 +1,38 @@
+1) The player class will take the spritesheet for the player, and will internally store the state of the player and render the portion from the spritesheet accordingly . 
+player is currently 95 width 159 height , 
+the 0th row is for down , next for left , next for right , next for up 
+
+the 4th column of the player is the state that we leave him at if he has stopped . , when the key up is received . 
+
+Reendr function of the player will now also use the state of the player (not as an input , but rather to generate a clip and pass as an input to texture rendering )
+
+
+Whenver any key is pressed , even if repeat key then we first update the state , then we check for repeat , if repeat is false , then we update the velocity
+
+If the player is trying to move to a wall currently its legs keep moving , since in the collision logic we check that if the dot moved out we just revert back the postion but the state still changes. 
+
+Player now has a health and energy bar that will be displayed on the the top left . 
+
+
+For text what I am gonna do is , say if I have health then it is associated with the player. 
+When I render the player , the health of the player is also rendered at the top right corener of the screen like a bar or text  . 
+Player's name is also rendered and so on , these are all the atttributes of the player and are all rendered. 
+So a player now will internally store 2-3 textures relateing to the pics. 
+In the loadMedia/ 
+
+
+Caution :: Abhi I have not even worked on closing the stuff that I load, do work on it as well, else  I will be totally fucked. 
+
+In bool init() we do not load or prepare any texture ,
+what we do is 
+1) Initialise SDL 
+2) Make a window
+3)Make the renderer
+4) Set the renderer draw color 
+5) Do the settings for loading Png
+6) Initialise TTF
+
+Now the player is gonna store all his textures, 
+
+Abhi init function does not take the players as input , currenly it just initialises the globa player.  but later it will take an array of players as input and initilasie them 
+Even the renderer will be passed as a value to the player.

@@ -1,0 +1,214 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <stdio.h>
+#include <string>
+#include <fstream>
+#include "texture.h"
+#include "functions.h"
+#include <SDL2/SDL_ttf.h>
+#include "Player.h"
+#include <utility>
+
+
+Player::Player(SDL_Renderer* myRenderer)
+{
+    //Initialize the collision box
+    mBox.x = 0;
+    mBox.y = 0;
+	mBox.w = Player_WIDTH;
+	mBox.h = Player_HEIGHT;
+
+    gRenderer = myRenderer ; 
+
+    if (TTF_Init()==-1){
+        printf("Failed to Initialise Player");
+    } 
+
+
+
+    //Initialize the velocity
+    mVelX = 0;
+    mVelY = 0;
+}
+
+bool Player :: loadPlayer()
+{
+
+    myFont = TTF_OpenFont( "EvilEmpire-4BBVK.ttf", 24 );
+	if( myFont == NULL )
+	{
+		printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
+		return false;
+	}
+
+    printf("Was here"); 
+    if( ! (PlayerBodyTexture.loadFromFile( "SpritePlayer1.png" ,gRenderer)) )
+	{
+		printf( "Failed to load Playe r texture!\n" );
+		return false;
+	}
+
+    if( !PlayerHealthTexture.loadFromRenderedText( "Health" , textColor ,myFont, gRenderer) )
+	{
+		printf( "Failed to load Play er texture!\n" );
+		return false;
+	}
+
+    if( !PlayerEnergyTexture.loadFromRenderedText( "Energy" , textColor ,myFont, gRenderer) )
+	{
+		printf( "Failed to load Playe r texture!\n" );
+		return false;
+	}
+
+    return true;
+
+
+
+}
+
+bool Player ::touchesWall(Tile* tiles[] )
+{
+	return false; 
+    //Go through the tiles
+    for( int i = 0; i < TOTAL_TILES; ++i )
+    { 
+        //If the tile is a wall type tile 
+		 //    if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
+        if( ( tiles[ i ]->getType() >= 12 ) && ( tiles[ i ]->getType() <= 12 ) )
+		//isse upar wali line thi pehle check karne ke liye ab ye kardi faltu mein 
+        {
+            //If the collision box touches  the wall tile
+            if( myfunctions.checkCollision( mBox, tiles[ i ]->getBox() ) )
+            {
+                return true;
+            }
+        }
+    }
+
+    //If no wall tiles were touched
+    return false;
+}
+
+void Player::handleEvent( SDL_Event& e )
+{
+    //If a key was pressed
+	if( e.type == SDL_KEYDOWN)
+    {
+
+
+        switch(e.key.keysym.sym)
+        {
+            case SDLK_DOWN : if(myState.first == 0) myState.second+=1;else myState={0,4};break;
+            case SDLK_LEFT : if(myState.first == 1) myState.second+=1;else myState={1,4};break;
+            case SDLK_RIGHT : if(myState.first == 2) myState.second+=1;else myState={2,4};break;
+            case SDLK_UP : if(myState.first ==3) myState.second+=1;else myState={3,4};break;
+
+            
+        }
+        if (myState.second <0 ) myState.second+=12;
+        if(myState.second>=12) myState.second-=12;
+        
+
+        //Adjust the velocity
+
+        if(e.key.repeat==0){
+        switch( e.key.keysym.sym )
+        {
+            case SDLK_UP: mVelY -= Player_VEL; break;
+            case SDLK_DOWN: mVelY += Player_VEL; break;
+            case SDLK_LEFT: mVelX -= Player_VEL; break;
+            case SDLK_RIGHT: mVelX += Player_VEL; break;
+        }}
+    }
+    //If a key was released
+    else if( e.type == SDL_KEYUP )
+    {
+        //Adjust the velocity
+
+        // switch(e.key.keysym.sym)
+        // {
+        //     case SDLK_DOWN : myState={0,4};break;
+        //     case SDLK_LEFT : myState={1,4};break;
+        //     case SDLK_RIGHT : myState={2,4};break;
+        //     case SDLK_UP : myState={3,4};break;
+        // }
+
+        // if (myState.second <0 ) myState.second+=12; 
+        // if(myState.second>12) myState.second-=12;
+
+        if(e.key.repeat==0){
+        switch( e.key.keysym.sym )
+        {
+            case SDLK_UP: mVelY += Player_VEL; break;
+            case SDLK_DOWN: mVelY -= Player_VEL; break;
+            case SDLK_LEFT: mVelX += Player_VEL; break;
+            case SDLK_RIGHT: mVelX -= Player_VEL; break;
+        }
+
+        }
+    }
+}
+
+void Player::move( Tile *tiles[] )
+{
+    //Move the Player left or right
+    mBox.x += mVelX;
+
+    //If the Player went too far to the left or right or touched a wall
+    if( ( mBox.x < 0 ) || ( mBox.x + Player_WIDTH > LEVEL_WIDTH ) || touchesWall( tiles ) )
+    {
+        //move back
+        mBox.x -= mVelX;
+    }
+
+    //Move the Player up or down
+    mBox.y += mVelY;
+
+    //If the Player went too far up or down or touched a wall
+    if( ( mBox.y < 0 ) || ( mBox.y + Player_HEIGHT > LEVEL_HEIGHT ) || touchesWall( tiles ) )
+    {
+        //move back
+        mBox.y -= mVelY;
+    }
+}
+
+void Player::setCamera( SDL_Rect& camera )
+{
+	//Center the camera over the Player
+	camera.x = ( mBox.x + Player_WIDTH / 2 ) - SCREEN_WIDTH / 2;
+	camera.y = ( mBox.y + Player_HEIGHT / 2 ) - SCREEN_HEIGHT / 2;
+
+	//Keep the camera in bounds
+	if( camera.x < 0 )
+	{ 
+		camera.x = 0;
+	}
+	if( camera.y < 0 )
+	{
+		camera.y = 0;
+	}
+	if( camera.x > LEVEL_WIDTH - camera.w )
+	{
+		camera.x = LEVEL_WIDTH - camera.w;
+	}
+	if( camera.y > LEVEL_HEIGHT - camera.h )
+	{
+		camera.y = LEVEL_HEIGHT - camera.h;
+	}
+}
+
+void Player::render( SDL_Rect& camera  )
+{
+    SDL_Rect myClip ={ 95*myState.second , 159*myState.first, 95,159};
+    //Show the Player
+	(PlayerBodyTexture).render(gRenderer, mBox.x - camera.x, mBox.y - camera.y ,48,80 , &myClip);
+    PlayerHealthTexture.render(gRenderer , 400 , 0 ) ; 
+    PlayerEnergyTexture.render(gRenderer, 400 , 50);
+}
+
+
+void Player::close(){
+    PlayerBodyTexture.free();
+    PlayerHealthTexture.free();
+    PlayerEnergyTexture.free();
+}

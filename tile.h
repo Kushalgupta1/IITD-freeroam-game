@@ -18,11 +18,18 @@ using namespace std;
 class Tile
 {
     public:
+
+        const int SCREEN_WIDTH = 640;
+		const int SCREEN_HEIGHT = 480;
+		const int LEVEL_WIDTH = 4096;
+		const int LEVEL_HEIGHT = 4096;
+		const int TILE_WIDTH = 32;
+		const int TILE_HEIGHT = 32;
+		const int TOTAL_TILES = 16384;
+
 		//Initializes position and type
 		Tile( int x, int y, int tileType );
 
-        const int TILE_WIDTH = 80;
-      const int TILE_HEIGHT = 80;
 
 		//Shows the tile
 		void render( SDL_Renderer* gRenderer ,SDL_Rect& camera, LTexture *gTileTexture );
@@ -33,7 +40,7 @@ class Tile
 		//Get the collision box
 		SDL_Rect getBox();
 
-        Functions myfunctions  ;
+        functions myfunctions  ;
     private:
 		//The attributes of the tile
 		SDL_Rect mBox;

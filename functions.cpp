@@ -9,9 +9,10 @@ using namespace std;
 #include "texture.h"
 #include "functions.h"
 
-Functions :: Functions(){}
 
-bool Functions :: checkCollision( SDL_Rect a, SDL_Rect b ){
+functions :: functions(){}
+
+bool functions :: checkCollision( SDL_Rect a, SDL_Rect b ){
     //The sides of the rectangles
     int leftA, leftB;
     int rightA, rightB;
@@ -54,3 +55,4 @@ bool Functions :: checkCollision( SDL_Rect a, SDL_Rect b ){
     //If none of the sides from A are outside B
     return true;
 }
+
