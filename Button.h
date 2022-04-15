@@ -1,41 +1,41 @@
-// #ifndef BUTTON_H
-// #define BUTTON_H
-// #include <SDL2/SDL.h>
-// #include <SDL2/SDL_image.h>
-// #include <texture.h>
+#ifndef BUTTON_H
+#define BUTTON_H
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <texture.h>
 
-// class LButton
-// {
-// 	public:
-// 		//Initializes internal variables
-// 		LButton();
-//         LTexture MyTexture ; 
+class LButton
+{
+	public:
+		//Initializes internal variables
+		LButton();
+        LTexture MyTexture ; 
 
-//         bool loadButton();
+        bool loadButton();
 
-//         int WindowWidth = 960; 
-//         int WindowHeight = 640;
+        int WindowWidth = 960; 
+        int WindowHeight = 640;
 
-//         void UpdateParameters(int x , int y );
+        void UpdateParameters(int x , int y );
 
-// 		//Sets top left position
-// 		void setPosition( int x, int y );
+		//Sets top left position
+		void setPosition( int x, int y );
 
-// 		//Handles mouse event
-// 		void handleEvent( SDL_Event* e );
+		//Handles mouse event
+		void handleEvent( SDL_Event* e );
 	
-// 		//Shows button sprite
-// 		void render();
+		//Shows button sprite
+		void render();
 
-//         int* GameState ; 
+        int* GameState ; 
 
-// 	private:
-// 		//Top left position
-// 		SDL_Point mPosition;
+	private:
+		//Top left position
+		SDL_Point mPosition;
 
-// 		//Currently used global sprite, this is used to tell which sprtie it has that 
-// 		//portion of the spritesheet will be shown on the portion assigned to this button
-//         int ButtonState
+		//Currently used global sprite, this is used to tell which sprtie it has that 
+		//portion of the spritesheet will be shown on the portion assigned to this button
+        int ButtonState;
 		
-// };
-// #endif
+};
+#endif

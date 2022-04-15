@@ -43,7 +43,7 @@ const int LAYER2_TOTAL_TILES = 80000;
 
 LWindow gWindow ; 
 
-
+LButton startButton ; 
 
 //Starts up SDL and creates window
 bool init();
@@ -474,21 +474,22 @@ int main( int argc, char* args[] )
 				capTimer.start();
 				//Handle events on queue
 
-				// while( SDL_PollEvent( &e ) != 0 && gameState==0 )
-				// {
-				// 	//User requests quit
-				// 	if( e.type == SDL_QUIT )
-				// 	{
-				// 		quit = true;
-				// 	}
+				while( SDL_PollEvent( &e ) != 0 && gameState==0 )
+				{
+					//User requests quit
+					if( e.type == SDL_QUIT )
+					{
+						quit = true;
+					}
 
-				// 	//Handle input for the Player
-				// 	gWindow.handleEvent( e );
+					//Handle input for the Player
+					gWindow.handleEvent( e );
+
+						
 					
 					
 					
-					
-				// }
+				}
 
 				while( SDL_PollEvent( &e ) != 0 )
 				{
