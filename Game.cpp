@@ -15,6 +15,7 @@ and may not be redistributed without written permission.*/
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include "Window.h"
+#include <vector>
 // #include "camera.h"
 
 
@@ -62,6 +63,13 @@ bool checkCollision( SDL_Rect a, SDL_Rect b );
 
 //Sets tiles from tile map
 bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] );
+
+int gameState = 0 ; // State =0  is for not started, state=1 is for started . 
+
+
+
+vector<LTexture> Textures(2) ; 
+vector<std::string> Images{"SmallImage.png","BigImage.png"}; 
 
 // //The window we'll be rendering to
 // SDL_Window* gWindow = NULL ;
@@ -156,12 +164,19 @@ bool init()
 	return success;
 }
 
+TTF_Font *textFont = NULL; 
+
 bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] )
 {
 	//Loading success flag
 	bool success = true;
 
-
+	 textFont = TTF_OpenFont( "EvilEmpire-4BBVK.ttf", 24 );
+	if( textFont == NULL )
+	{
+		printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
+		return false;
+	}
 
 	
 	if( !player1.loadPlayer() )
@@ -181,6 +196,14 @@ bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] )
 		printf( "Failed to load tile set texture!\n" );
 		success = false;
 	}
+
+	for(int i=0 ; i<2 ; i++){
+		if(!Textures[i].loadFromFile(Images[i],gRenderer)){
+			printf("Faield to load Texture from Image %s" , Images[i]);
+			success=false;
+		}
+	}
+	
 
 	//Load tile map
 	if( !setTiles(TilesLayer1 ,TilesLayer2) )
@@ -382,6 +405,24 @@ bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] )
     return tilesLoaded;
 }
 
+
+void displayText(SDL_Renderer* gRenderer ,std::string sentence , int WindowWidth , int WindowHeight){
+	LTexture myTexture;
+	SDL_Color textColor={0,0,0};
+	if(!myTexture.loadFromRenderedText(sentence ,textColor ,  textFont,gRenderer )){
+		printf("Error in loading texture for string %s",sentence) ; 
+
+	}
+
+	SDL_Rect textbox = { WindowWidth / 5, WindowHeight*9/10, WindowWidth*2 / 3, WindowHeight/10};
+	SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );		
+	SDL_RenderFillRect( gRenderer, &textbox );
+
+	myTexture.render(gRenderer,WindowWidth/3 , WindowHeight*9/10, WindowWidth/3 , WindowHeight/11 );
+	myTexture.free();
+
+
+}
 int main( int argc, char* args[] )
 {
 	//Start up SDL and create window
@@ -432,6 +473,23 @@ int main( int argc, char* args[] )
 				//Start cap timer
 				capTimer.start();
 				//Handle events on queue
+
+				// while( SDL_PollEvent( &e ) != 0 && gameState==0 )
+				// {
+				// 	//User requests quit
+				// 	if( e.type == SDL_QUIT )
+				// 	{
+				// 		quit = true;
+				// 	}
+
+				// 	//Handle input for the Player
+				// 	gWindow.handleEvent( e );
+					
+					
+					
+					
+				// }
+
 				while( SDL_PollEvent( &e ) != 0 )
 				{
 					//User requests quit
@@ -443,6 +501,8 @@ int main( int argc, char* args[] )
 					//Handle input for the Player
 					gWindow.handleEvent( e );
 					player1.updateScreen(&gWindow.mWidth , &gWindow.mHeight);
+					
+
 
 					if( !gWindow.isMinimized() ){player1.handleEvent( e );}
 				}
@@ -474,6 +534,7 @@ int main( int argc, char* args[] )
 				player1.render( camera  );
 
 				//Update screen
+				displayText(gRenderer,"Hello",gWindow.mWidth,gWindow.mHeight) ; 
 				SDL_RenderPresent( gRenderer );}
 
 				 ++countedFrames;
@@ -485,6 +546,7 @@ int main( int argc, char* args[] )
 					//Wait remaining time
 					SDL_Delay( SCREEN_TICK_PER_FRAME - frameTicks );
 				}
+				// printf("Width is %d , and height is %d \n" ,gWindow.mWidth ,gWindow.mHeight );
 
 			}
 		}

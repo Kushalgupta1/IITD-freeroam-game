@@ -29,8 +29,8 @@ class Player
         const int LAYER1_TOTAL_TILES = 80000;
 		const int LAYER2_TOTAL_TILES = 80000;
 		//The dimensions of the Player
-		static const int Player_WIDTH = 95;
-		static const int Player_HEIGHT = 159;
+		static const int Player_WIDTH = 48;
+		static const int Player_HEIGHT = 80;
 
 		//Maximum axis velocity of the Player
 		static const int Player_VEL = 10;

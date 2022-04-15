@@ -59,10 +59,10 @@ if(type==0) // for camera collision with wall
     return true;}
 
     else{
-        if(rightA-15<=leftB+10) return false;
-        if(leftA+15>=rightB-10) return false;
-        if(bottomA-40<=topB) return false;
-        if(bottomA-40>=bottomB)return false;
+        if(rightA-5<=leftB) return false;
+        if(leftA+5>=rightB) return false;
+        if(bottomA-5<=topB) return false;
+        if(bottomA-5>=bottomB)return false;
         return true;
 
     }
