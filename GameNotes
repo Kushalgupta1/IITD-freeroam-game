@@ -36,3 +36,9 @@ Now the player is gonna store all his textures,
 
 Abhi init function does not take the players as input , currenly it just initialises the globa player.  but later it will take an array of players as input and initilasie them 
 Even the renderer will be passed as a value to the player.
+
+What you can do is at the end see all types of deallocations that have been done, and if there is some kind you can do then do that 
+
+
+
+What I will do is , I will not allow the player to move on any object of layer3 , to check this I will check that his leg line must not be inside or on any building or object of layer3 except for the transparent part. This will make the correct effect. 

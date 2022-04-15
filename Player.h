@@ -11,6 +11,7 @@
 #include "functions.h"
 #include "tile.h"
 #include <utility>
+// #include "camera.h"
 
 
 //The Player that will move around on the screen
@@ -19,13 +20,14 @@ class Player
     public:
 
 
-        const int SCREEN_WIDTH = 640;
-        const int SCREEN_HEIGHT = 480;
-        const int LEVEL_WIDTH = 4096;
-        const int LEVEL_HEIGHT = 4096;
+        int* SCREEN_WIDTH ;
+        int* SCREEN_HEIGHT;
+        const int LEVEL_WIDTH = 12800;
+    	const int LEVEL_HEIGHT = 6400;
         const int TILE_WIDTH = 32;
         const int TILE_HEIGHT = 32;
-        const int TOTAL_TILES = 16384;
+        const int LAYER1_TOTAL_TILES = 80000;
+		const int LAYER2_TOTAL_TILES = 80000;
 		//The dimensions of the Player
 		static const int Player_WIDTH = 95;
 		static const int Player_HEIGHT = 159;
@@ -41,7 +43,7 @@ class Player
 
 		LTexture  PlayerBodyTexture  ; 
 		//Initializes the variables
-		Player( SDL_Renderer* myRenderer);
+		void Constructor(SDL_Renderer* myRenderer , int* width , int* height);
 		//This is the constructor of the player, takes in a renderer and sets that
 
 
@@ -49,7 +51,6 @@ class Player
 		LTexture PlayerEnergyTexture; 
 
 
-		SDL_Renderer* gRenderer ; 
 
 		bool loadPlayer(); 
 
@@ -60,13 +61,14 @@ class Player
 		void move( Tile *tiles[] );
 
 		//Centers the camera over the Player
-		void setCamera( SDL_Rect& camera );
+		void setCamera( SDL_Rect &camera );
 
 		//Shows the Player on the screen
 		void render( SDL_Rect& camera );
 
         bool touchesWall(Tile* tiles[] ) ; 
 
+		void updateScreen(int* widhh, int* height);
 		void close();
 
     private:
@@ -75,14 +77,20 @@ class Player
 
 
 		double myHealth=100; 
-		double myHunger=0;
+		double myEnergy=50;
+
+
+		SDL_Rect HealthBar = { 500 , 5, (int)(myHealth), 20 };
+		SDL_Rect EnergyBar= {500 ,45, (int)(myEnergy) , 20};
 		
+		SDL_Renderer* gRenderer ; 
 		//The velocity of the Player
 		int mVelX, mVelY;
-
+ 
 		pair<int,int> myState ={2,4}; 
 		// the first part tells whether moving up or left or right or down , 
 		//the second part tells that which phase you are in right now
 		//state is initialised to 2,4
 };
+
 #endif 

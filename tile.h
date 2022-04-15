@@ -15,24 +15,26 @@ using namespace std;
 
 
 
+
 class Tile
 {
     public:
 
         const int SCREEN_WIDTH = 640;
 		const int SCREEN_HEIGHT = 480;
-		const int LEVEL_WIDTH = 4096;
-		const int LEVEL_HEIGHT = 4096;
+		const int LEVEL_WIDTH = 12800;
+    	const int LEVEL_HEIGHT = 6400;
 		const int TILE_WIDTH = 32;
 		const int TILE_HEIGHT = 32;
-		const int TOTAL_TILES = 16384;
+		const int LAYER1_TOTAL_TILES = 80000;
+		const int LAYER2_TOTAL_TILES = 80000;
 
 		//Initializes position and type
 		Tile( int x, int y, int tileType );
 
 
 		//Shows the tile
-		void render( SDL_Renderer* gRenderer ,SDL_Rect& camera, LTexture *gTileTexture );
+		void render( SDL_Renderer* gRenderer ,SDL_Rect &camera, LTexture *gTileTexture );
 
 		//Get the tile type
 		int getType();

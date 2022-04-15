@@ -10,13 +10,15 @@
 #include <utility>
 
 
-Player::Player(SDL_Renderer* myRenderer)
+void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height)
 {
     //Initialize the collision box
     mBox.x = 0;
     mBox.y = 0;
 	mBox.w = Player_WIDTH;
 	mBox.h = Player_HEIGHT;
+    SCREEN_WIDTH=width;
+    SCREEN_HEIGHT=height;
 
     gRenderer = myRenderer ; 
 
@@ -68,17 +70,17 @@ bool Player :: loadPlayer()
 
 bool Player ::touchesWall(Tile* tiles[] )
 {
-	return false; 
+	
     //Go through the tiles
-    for( int i = 0; i < TOTAL_TILES; ++i )
+    for( int i = 0; i < LAYER2_TOTAL_TILES; ++i )
     { 
         //If the tile is a wall type tile 
 		 //    if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
-        if( ( tiles[ i ]->getType() >= 12 ) && ( tiles[ i ]->getType() <= 12 ) )
+        if( ( tiles[ i ]->getType() > 0 )  )
 		//isse upar wali line thi pehle check karne ke liye ab ye kardi faltu mein 
         {
             //If the collision box touches  the wall tile
-            if( myfunctions.checkCollision( mBox, tiles[ i ]->getBox() ) )
+            if( myfunctions.checkCollision( mBox, tiles[ i ]->getBox() ,1) )
             {
                 return true;
             }
@@ -172,38 +174,53 @@ void Player::move( Tile *tiles[] )
     }
 }
 
-void Player::setCamera( SDL_Rect& camera )
+
+void Player ::updateScreen(int* width, int* height){
+    SCREEN_WIDTH=width;
+    SCREEN_HEIGHT=height;
+}
+void Player::setCamera( SDL_Rect &camera )
 {
 	//Center the camera over the Player
-	camera.x = ( mBox.x + Player_WIDTH / 2 ) - SCREEN_WIDTH / 2;
-	camera.y = ( mBox.y + Player_HEIGHT / 2 ) - SCREEN_HEIGHT / 2;
-
+	(camera).x = ( mBox.x + Player_WIDTH / 2 ) - *SCREEN_WIDTH / 2;
+	(camera).y = ( mBox.y + Player_HEIGHT / 2 ) - *SCREEN_HEIGHT / 2;
+    (camera).w = *SCREEN_WIDTH  ;
+    (camera).h = *SCREEN_HEIGHT  ;
 	//Keep the camera in bounds
-	if( camera.x < 0 )
+	if( (camera).x < 0 )
 	{ 
-		camera.x = 0;
+		(camera).x = 0;
 	}
-	if( camera.y < 0 )
+	if( (camera).y < 0 )
 	{
-		camera.y = 0;
+		(camera).y = 0;
 	}
-	if( camera.x > LEVEL_WIDTH - camera.w )
+	if( (camera).x > LEVEL_WIDTH - (camera).w) 
 	{
-		camera.x = LEVEL_WIDTH - camera.w;
+		(camera).x = LEVEL_WIDTH - ((camera).w);
 	}
-	if( camera.y > LEVEL_HEIGHT - camera.h )
+	if( (camera).y > LEVEL_HEIGHT - ((camera).h ))
 	{
-		camera.y = LEVEL_HEIGHT - camera.h;
+		(camera).y = LEVEL_HEIGHT - ((camera).h);
 	}
 }
 
-void Player::render( SDL_Rect& camera  )
+void Player::render( SDL_Rect &camera  )
 {
     SDL_Rect myClip ={ 95*myState.second , 159*myState.first, 95,159};
     //Show the Player
-	(PlayerBodyTexture).render(gRenderer, mBox.x - camera.x, mBox.y - camera.y ,48,80 , &myClip);
+	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,48,80 , &myClip);
     PlayerHealthTexture.render(gRenderer , 400 , 0 ) ; 
     PlayerEnergyTexture.render(gRenderer, 400 , 50);
+
+
+
+    
+    SDL_SetRenderDrawColor( gRenderer, 0x00, 0xFF, 0x00, 0xFF );		
+    SDL_RenderFillRect( gRenderer, &HealthBar );
+
+    SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );		
+    SDL_RenderFillRect( gRenderer, &EnergyBar );
 }
 
 

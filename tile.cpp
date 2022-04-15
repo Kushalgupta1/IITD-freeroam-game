@@ -29,12 +29,12 @@ Tile::Tile( int x, int y, int tileType )
 void Tile::render( SDL_Renderer* gRenderer ,  SDL_Rect& camera ,LTexture *gTileTexture)
 {
     //If the tile is on screen
-    int tyleX = 32*(mType%65) ; 
-    int tyleY = (mType/65) ; 
+    int tyleX = 32*(mType%30) ; 
+    int tyleY = (mType/30) ; 
      tyleY = 32*tyleY;
 
     SDL_Rect renderQuad = { tyleX, tyleY, mBox.w, mBox.h };
-    if( myfunctions.checkCollision( camera, mBox ) )
+    if( myfunctions.checkCollision( camera, mBox,0 ) )
     {
         //Show the tile
         (*gTileTexture).render( gRenderer,mBox.x - camera.x, mBox.y - camera.y, 0,0,&renderQuad );
