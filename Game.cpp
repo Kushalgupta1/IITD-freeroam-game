@@ -18,6 +18,7 @@ and may not be redistributed without written permission.*/
 #include <vector>
 #include "Button.h"
 #include "timer.h"
+#include <SDL2/SDL_mixer.h>
 
 // #include "camera.h"
 
@@ -46,9 +47,11 @@ const int LAYER3_TOTAL_TILES = 80000;
 
 LWindow gWindow ; 
 
+//This is the music that will play in the backgorund 
+Mix_Music *BackgroundMusic = NULL;
 
 
-std::string message=" " ; 
+std::string message=" Hello " ; 
 
 //Starts up SDL and creates window
 bool init();
@@ -162,6 +165,12 @@ bool init()
 					success = false;
 				}
 
+				if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+				{
+					printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+					success = false;
+				}
+
 				player1.Constructor(gRenderer,&gWindow.mWidth,&gWindow.mHeight,&message);
 
 			} 
@@ -178,11 +187,18 @@ bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[])
 	//Loading success flag
 	bool success = true;
 
-	 textFont = TTF_OpenFont( "EvilEmpire-4BBVK.ttf", 24 );
+	 textFont = TTF_OpenFont( "EvilEmpire-4BBVK.ttf", 28 );
 	if( textFont == NULL )
 	{
 		printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
 		return false;
+	}
+
+	BackgroundMusic = Mix_LoadMUS( "Fluffing-a-Duck.wav" );
+	if( BackgroundMusic == NULL )
+	{
+		printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+		success = false;
 	}
 
 	
@@ -258,6 +274,9 @@ void close( Tile* TilesLayer1[] , Tile* TilesLayer2[]  )
 	SDL_DestroyRenderer( gRenderer );
 	gWindow.free();
 
+	// this is to close the background music 
+	Mix_FreeMusic( BackgroundMusic );
+	BackgroundMusic = NULL;
 
 	gRenderer = NULL;
 
@@ -559,7 +578,8 @@ int main( int argc, char* args[] )
 			gameStartButton.InitialiseButton(1,&gameTimer,&gameState,0.4,0.35,0.2,0.3,"audio",gRenderer,"start-up.png","start-down.png");
 
 			LButton gamePauseButton;
-			LButton gameResumeButto; 
+	
+			LButton gameResumeButton; 
 			//In memory text stream
 			std::stringstream timeText;
 
@@ -606,6 +626,7 @@ int main( int argc, char* args[] )
 			//this is the condition when game has started
 			else{
 				gameStartButton.close();
+				Mix_PlayMusic( BackgroundMusic, 0);
 
 				while( SDL_PollEvent( &e ) != 0  )
 				{
@@ -613,6 +634,7 @@ int main( int argc, char* args[] )
 					if( e.type == SDL_QUIT )
 					{
 						quit = true;
+						Mix_HaltMusic(); // not sure if this is required
 					}
 
 					//Handle input for the Player
@@ -627,7 +649,7 @@ int main( int argc, char* args[] )
 
 				if( !gWindow.isMinimized() ){
 				//Move the dot
-				player1.updateParams( tileset2 ); //movement will revert only on base of tileset2
+				player1.updateParams( tileset2 ,tileset3); //movement will revert only on base of tileset2
 				player1.setCamera( camera);
 
 				//Clear screen

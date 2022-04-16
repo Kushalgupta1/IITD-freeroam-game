@@ -74,7 +74,7 @@ class Player
 
 		//Updates the Player position and check collision against tiles, also update player health according to health velocity or decrease money according to money velocity 
 
-		void updateParams( Tile *tiles[] );
+		void updateParams( Tile *tileset2[] , Tile *tileset3[] );
 
 		//Centers the camera over the Player
 		void setCamera( SDL_Rect &camera );

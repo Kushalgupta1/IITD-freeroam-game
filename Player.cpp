@@ -192,7 +192,7 @@ if(onSpecialSquare(tiles)){
     }
 }
 
-void Player::updateParams( Tile *tiles[] )
+void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] )
 {   
     //targetTime is the time set when a process starts
     if(*processGoingOn && gameTimer->getTicks()>=targetTime){
@@ -206,7 +206,7 @@ void Player::updateParams( Tile *tiles[] )
     mBox.x += mVelX;
 
     //If the Player went too far to the left or right or touched a wall
-    if( ( mBox.x < 0 ) || ( mBox.x + Player_WIDTH > LEVEL_WIDTH ) || touchesWall( tiles ) )
+    if( ( mBox.x < 0 ) || ( mBox.x + Player_WIDTH > LEVEL_WIDTH ) || touchesWall( tileset2 ) )
     {
         //move back
         mBox.x -= mVelX;
@@ -216,10 +216,18 @@ void Player::updateParams( Tile *tiles[] )
     mBox.y += mVelY;
 
     //If the Player went too far up or down or touched a wall
-    if( ( mBox.y < 0 ) || ( mBox.y + Player_HEIGHT > LEVEL_HEIGHT ) || touchesWall( tiles ) )
+    if( ( mBox.y < 0 ) || ( mBox.y + Player_HEIGHT > LEVEL_HEIGHT ) || touchesWall( tileset2 ) )
     {
         //move back
         mBox.y -= mVelY;
+    }
+
+    *message ="FreeRoam";
+    if(!(*processGoingOn) && onSpecialSquare(tileset3)){
+        switch(onSpecialSquare(tileset3)){
+            case 1 : if(!hasYulu){*message="Press 1 to get Yulu";} else {*message="Press 1 to Leave Yulu";} break;
+            case 2 : *message = "Press 1 to eat food"; break;
+        }
     }
 
     

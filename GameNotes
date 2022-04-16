@@ -73,3 +73,15 @@ In the load media the texture is created , the button is also passed with the ga
 
 
 Agar koi bhi entity negative ho jaati hai then uska flag raise kar do and handle that flag appropriately
+
+Bottom String , that tells instruction , health bar side mein honi chahiye , 
+Sound with buttons , sound on collission , game timer , pause state , pause button design , 
+
+
+I do onspecialsquare(tileset)  two times togethr, this is a heavy process and must be done once
+
+Don't forget to close music files !!! 
+
+Music pause button bhi daal sakte ho 
+
+Make sure that the gamesound is on loop . 
