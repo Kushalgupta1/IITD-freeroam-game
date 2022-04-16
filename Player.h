@@ -11,6 +11,8 @@
 #include "functions.h"
 #include "tile.h"
 #include <utility>
+#include <map>
+// #include "camera.h"
 
 
 //The Player that will move around on the screen
@@ -19,37 +21,41 @@ class Player
     public:
 
 
-        const int SCREEN_WIDTH = 640;
-        const int SCREEN_HEIGHT = 480;
-        const int LEVEL_WIDTH = 4096;
-        const int LEVEL_HEIGHT = 4096;
+
+
+
+        int* SCREEN_WIDTH ;
+        int* SCREEN_HEIGHT;
+        const int LEVEL_WIDTH = 12800;
+    	const int LEVEL_HEIGHT = 6400;
         const int TILE_WIDTH = 32;
         const int TILE_HEIGHT = 32;
-        const int TOTAL_TILES = 16384;
+        const int LAYER1_TOTAL_TILES = 80000;
+		const int LAYER2_TOTAL_TILES = 80000;
 		//The dimensions of the Player
-		static const int Player_WIDTH = 95;
-		static const int Player_HEIGHT = 159;
+		static const int Player_WIDTH = 48;
+		static const int Player_HEIGHT = 80;
 
 		//Maximum axis velocity of the Player
-		static const int Player_VEL = 10;
+		int Player_VEL = 10;
 
         functions myfunctions  ;
 
-		SDL_Color textColor = { 0, 0, 0 }; // setting color to black , you may even keep different colors for energy and health 
+		SDL_Color textColor = { 0, 0, 0 }; // setting color to black , you may even keep different colors for Happiness and health 
 		TTF_Font *myFont = NULL ;
 
 
 		LTexture  PlayerBodyTexture  ; 
 		//Initializes the variables
-		Player( SDL_Renderer* myRenderer);
+		void Constructor(SDL_Renderer* myRenderer , int* width , int* height);
 		//This is the constructor of the player, takes in a renderer and sets that
 
 
 		LTexture PlayerHealthTexture; 
-		LTexture PlayerEnergyTexture; 
+		LTexture PlayerHappinessTexture; 
+		LTexture PlayerMoneyTexture;
 
 
-		SDL_Renderer* gRenderer ; 
 
 		bool loadPlayer(); 
 
@@ -60,29 +66,92 @@ class Player
 		void move( Tile *tiles[] );
 
 		//Centers the camera over the Player
-		void setCamera( SDL_Rect& camera );
+		void setCamera( SDL_Rect &camera );
 
 		//Shows the Player on the screen
 		void render( SDL_Rect& camera );
 
         bool touchesWall(Tile* tiles[] ) ; 
 
+		
+
+		int Assignments ; 
+		int Money;
+
+		void setTimer (LTimer* gameTimer);
+		void updateScreen(int* widhh, int* height);
 		void close();
 
     private:
 		//Collision box of the Player
 		SDL_Rect mBox;
 
-
 		double myHealth=100; 
-		double myHunger=0;
+		double myHappiness=50;
+		double myMoney = 100 ; 
+
+		map<int , void (*) (int)>  executeFunc; 
+
+		void EatFood(int type){}; 
+
+		// void GetYulu(){
+		// 	mySpeed=20;
+		// 	hasYulu =true;
+		// 	moneyDecreaserate=-1;
+		// }
+
+		// void LeaveYulu(){
+		// 	mySpeed=10;
+		// 	hasYulu=false;
+		// 	moneyDecreaserate=0;
+		// }
+		// void SubmitAssignment(){
+		// 	if(Assignments>0){Assignment-=1;}
+			
+		// }
+		// void TakeBall(){
+		// 	NumBalls+=1;
+		// }
+		// void GiveBall(){
+		// 	if(NumBalls>0){NumBalls-=1;}
+		// }
+		// void sleep(){
+		// 	myHealth=100;
+		// }
+		// void playChess(){
+
+		// }
+		// void Dance(){
+
+		// }
+		// void Quizzing(){
+
+		// }
+		// void Play(){
+		// 	happiness++
+		// 	energy--
+		// }
+		// void study(){
+		// 	energy--;
+		// 	happiness++
+		// }
+
+
+		LTimer* gameTimer ; 
+
+
+		SDL_Rect HealthBar = { 500 , 5, (int)(myHealth), 20 };
+		SDL_Rect HappinessBar= {500 ,45, (int)(myHappiness) , 20};
+		SDL_Rect MoneyBar= {500 ,85, (int)(myMoney) , 20};
 		
+		SDL_Renderer* gRenderer ; 
 		//The velocity of the Player
 		int mVelX, mVelY;
-
+ 
 		pair<int,int> myState ={2,4}; 
 		// the first part tells whether moving up or left or right or down , 
 		//the second part tells that which phase you are in right now
 		//state is initialised to 2,4
 };
+
 #endif 

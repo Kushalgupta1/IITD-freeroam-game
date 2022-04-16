@@ -36,3 +36,37 @@ Now the player is gonna store all his textures,
 
 Abhi init function does not take the players as input , currenly it just initialises the globa player.  but later it will take an array of players as input and initilasie them 
 Even the renderer will be passed as a value to the player.
+
+What you can do is at the end see all types of deallocations that have been done, and if there is some kind you can do then do that 
+
+Move :: you check the tile and display message
+HandleEvent :: you just see if the correct key is pressed nd then you perform the task if done
+
+
+
+
+
+What I will do is , I will not allow the player to move on any object of layer3 , to check this I will check that his leg line must not be inside or on any building or object of layer3 except for the transparent part. This will make the correct effect. 
+
+
+
+Abhi health money textrues mein relative karna hai not abs.
+
+Now what I am gonna do is, there is gonna be a game timer , which is passed to the player as well with a pointer during initialisation. The game loop is running, it will be in phases , first phase will be when only the start screen is shown , second will be when the player is playing the game, third phase will be when the game shows payer statuses (kind of a pause phase) , fourth phase will be when the game has ended and displaying winner player. 
+
+The game is gonna have an attribute named phase. 
+
+Each phase has certain buttons , each button has pointer access to the main game phase, it can change the game phase, the game loop runs on the basis of phase you are in. 
+
+The timer starts running when you are in phase 2 , it gets paused in phase3 and stops in phase 4 . 
+
+When in phase 2 we would be getting events to handle , for the player handle we will check if he is on a certain tile and a certain key is pressed then the function will be called using the function map of the player. Thsi function woudld change player state variables or might put the process flag to 1 , when the process flag is 1 , the events other than quit won't be detected, only the player is rendered again and again. 
+
+In the process tag vala things , when the process is going on I will try to display the process going on as well . 
+
+Each player will also have a tasks accomplished value and he wins if he accomplishes all his tasks before others. 
+
+Now each button is also gonna store a sound effect which is done when the button is pressed. 
+
+So while initialising the button its things like the sound unit is initialised, also the sound file is passed, the png file for the button along with the place of the button on the page , the game timer is also passed in the initialisation.  
+In the load media the texture is created , the button is also passed with the game timer reference that the button can change. 

@@ -12,7 +12,8 @@ using namespace std;
 
 functions :: functions(){}
 
-bool functions :: checkCollision( SDL_Rect a, SDL_Rect b ){
+//first argument is the player , second argument is the wall/object 
+bool functions :: checkCollision( SDL_Rect a, SDL_Rect b , int type ){
     //The sides of the rectangles
     int leftA, leftB;
     int rightA, rightB;
@@ -32,6 +33,8 @@ bool functions :: checkCollision( SDL_Rect a, SDL_Rect b ){
     bottomB = b.y + b.h;
 
     //If any of the sides from A are outside of B
+if(type==0) // for camera collision with wall 
+{
     if( bottomA <= topB )
     {
         return false;
@@ -53,6 +56,15 @@ bool functions :: checkCollision( SDL_Rect a, SDL_Rect b ){
     }
 
     //If none of the sides from A are outside B
-    return true;
+    return true;}
+
+    else{
+        if(rightA-5<=leftB) return false;
+        if(leftA+5>=rightB) return false;
+        if(bottomA-5<=topB) return false;
+        if(bottomA-5>=bottomB)return false;
+        return true;
+
+    }
 }
 
