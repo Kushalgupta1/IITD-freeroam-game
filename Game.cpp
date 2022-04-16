@@ -42,19 +42,19 @@ const int TILE_WIDTH = 32;
 const int TILE_HEIGHT = 32;
 const int LAYER1_TOTAL_TILES = 80000;
 const int LAYER2_TOTAL_TILES = 80000;
-
+const int LAYER3_TOTAL_TILES = 80000;
 
 LWindow gWindow ; 
 
 
 
-
+std::string message=" " ; 
 
 //Starts up SDL and creates window
 bool init();
 
 //Loads media
-bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] );
+bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[]);
 
 //Frees media and shuts down SDL
 void close( Tile* tiles[] );
@@ -67,7 +67,7 @@ bool checkCollision( SDL_Rect a, SDL_Rect b );
 //functions mein daal dita isko 
 
 //Sets tiles from tile map
-bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] );
+bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[]  );
 
 int gameState = 0 ; // State =0  is for not started, state=1 is for started . 
 
@@ -162,7 +162,7 @@ bool init()
 					success = false;
 				}
 
-				player1.Constructor(gRenderer,&gWindow.mWidth,&gWindow.mHeight);
+				player1.Constructor(gRenderer,&gWindow.mWidth,&gWindow.mHeight,&message);
 
 			} 
 		}
@@ -173,7 +173,7 @@ bool init()
 
 TTF_Font *textFont = NULL; 
 
-bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] )
+bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[])
 {
 	//Loading success flag
 	bool success = true;
@@ -215,7 +215,7 @@ bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] )
 	
 
 	//Load tile map
-	if( !setTiles(TilesLayer1 ,TilesLayer2) )
+	if( !setTiles(TilesLayer1 ,TilesLayer2 ,TilesLayer3) )
 	{
 		printf( "Failed to load tile set!\n" );
 		success = false;
@@ -269,7 +269,7 @@ void close( Tile* TilesLayer1[] , Tile* TilesLayer2[]  )
 	SDL_Quit();
 }
 
-bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] )
+bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[] )
 {
 	//Success flag
 	bool tilesLoaded = true;
@@ -408,6 +408,13 @@ bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] )
 			}
 		}
 		
+
+
+
+
+
+
+		
 		
 	}
 
@@ -415,10 +422,74 @@ bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] )
     map2.close();
 
 
+
+	//The tile offsets
+    x = 0;
+	y = 0;
+
+    //Open the map
+    std::ifstream map3( "TILEMAP_campus_layer4.txt" );
+
+    //If the map couldn't be loaded
+    if( map3.fail() )
+    {
+		printf( "Unable to load map file!\n" );
+		tilesLoaded = false;
+    }
+	else
+	{
+		//Initialize the tiles
+		for( int i = 0; i < LAYER3_TOTAL_TILES; i++ )
+		{
+			//Determines what kind of tile will be made
+			int tileType = -1;
+
+			//Read tile from map file
+			map3 >> tileType;
+			map3>>trash ;
+
+			//If the was a problem in reading the map
+			if( map3.fail() )
+			{
+				//Stop loading map
+				std::cout<<"Error loading map: Unexpected end of file!\n "<<i ;
+				tilesLoaded = false;
+				break;
+			}
+
+			//If the number is a valid tile number
+			if( ( tileType >= 0 ) ) //originally there was tileType< TotalTileSPrites 
+			{
+				TilesLayer3[ i ] = new Tile( x, y, tileType );
+			}
+			//If we don't recognize the tile type
+			else
+			{
+				//Stop loading map
+				printf( "Error loading map: Invalid tile type at %d!\n", i );
+				tilesLoaded = false;
+				break;
+			}
+
+			//Move to next tile spot
+			x += TILE_WIDTH;
+
+			//If we've gone too far
+			if( x >= LEVEL_WIDTH )
+			{
+				//Move back
+				x = 0;
+
+				//Move to the next row
+				y += TILE_HEIGHT;
+			}
+		}
+		map3.close();
+
     //If the map was loaded fine
     return tilesLoaded;
+	}
 }
-
  
 
 void displayText(SDL_Renderer* gRenderer ,std::string sentence , int WindowWidth , int WindowHeight){
@@ -433,7 +504,8 @@ void displayText(SDL_Renderer* gRenderer ,std::string sentence , int WindowWidth
 	SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );		
 	SDL_RenderFillRect( gRenderer, &textbox );
 
-	myTexture.render(gRenderer,WindowWidth/3 , WindowHeight*9/10, WindowWidth/3 , WindowHeight/11 );
+	// myTexture.render(gRenderer,WindowWidth/3 , WindowHeight*9/10, WindowWidth/3 , WindowHeight/11 );
+	myTexture.render(gRenderer ,WindowWidth/3 , WindowHeight*12/13 );
 	myTexture.free();
 
 
@@ -451,9 +523,10 @@ int main( int argc, char* args[] )
 		//The level tiles
 		Tile* tileset1[ LAYER1_TOTAL_TILES ];
 		Tile* tileset2[ LAYER2_TOTAL_TILES ];
+		Tile* tileset3[LAYER3_TOTAL_TILES];
 
 		//Load media
-		if( !loadMedia( tileset1 ,tileset2))
+		if( !loadMedia( tileset1 ,tileset2,tileset3))
 		{
 			printf( "Failed to load media!\n" );
 		}
@@ -471,6 +544,8 @@ int main( int argc, char* args[] )
 			SDL_Rect camera ={0,0,gWindow.mWidth,gWindow.mHeight};
 			
 //The frames per second timer
+			bool processGoingOn =false;
+			player1.setProcess(&processGoingOn);
 			LTimer fpsTimer;
 
 			//The frames per second cap timer
@@ -527,6 +602,8 @@ int main( int argc, char* args[] )
 				}
 
 			}
+
+			//this is the condition when game has started
 			else{
 				gameStartButton.close();
 
@@ -544,13 +621,13 @@ int main( int argc, char* args[] )
 					
 
 
-					if( !gWindow.isMinimized() ){player1.handleEvent( e );}
+					if( !gWindow.isMinimized() && !processGoingOn ){player1.handleEvent( e ,tileset3 );}
 				}
 
 
 				if( !gWindow.isMinimized() ){
 				//Move the dot
-				player1.move( tileset2 ); //movement will revert only on base of tileset2
+				player1.updateParams( tileset2 ); //movement will revert only on base of tileset2
 				player1.setCamera( camera);
 
 				//Clear screen
@@ -574,7 +651,7 @@ int main( int argc, char* args[] )
 				player1.render( camera  );
 
 				//Update screen
-				displayText(gRenderer,"Hello",gWindow.mWidth,gWindow.mHeight) ; 
+				displayText(gRenderer,message,gWindow.mWidth,gWindow.mHeight) ; 
 				SDL_RenderPresent( gRenderer );}
 			}
 				 ++countedFrames;

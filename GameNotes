@@ -70,3 +70,6 @@ Now each button is also gonna store a sound effect which is done when the button
 
 So while initialising the button its things like the sound unit is initialised, also the sound file is passed, the png file for the button along with the place of the button on the page , the game timer is also passed in the initialisation.  
 In the load media the texture is created , the button is also passed with the game timer reference that the button can change. 
+
+
+Agar koi bhi entity negative ho jaati hai then uska flag raise kar do and handle that flag appropriately

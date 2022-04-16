@@ -101,6 +101,7 @@ void LButton::handleEvent( SDL_Event* e  ,int NewState)
 		if( inside )
 		{
 			*gameState=NewState;
+			gameTimer->start();
 		}
 		//Mouse is inside button
 		

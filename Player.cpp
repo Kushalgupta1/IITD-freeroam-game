@@ -10,7 +10,7 @@
 #include <utility>
 
 
-void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height)
+void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string *GameMessage)
 {
     //Initialize the collision box
     mBox.x = 0;
@@ -19,6 +19,7 @@ void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height)
 	mBox.h = Player_HEIGHT;
     SCREEN_WIDTH=width;
     SCREEN_HEIGHT=height;
+    message=GameMessage;
 
     gRenderer = myRenderer ; 
 
@@ -96,16 +97,38 @@ bool Player ::touchesWall(Tile* tiles[] )
     return false;
 }
 
-void Player::handleEvent( SDL_Event& e )
+int Player ::onSpecialSquare(Tile* tiles[] )
+{
+	
+    //Go through the tiles
+    for( int i = 0; i < LAYER3_TOTAL_TILES; ++i )
+    { 
+        //If the tile is a wall type tile 
+		 //    if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
+        if( ( tiles[ i ]->getType() > 0 )  )
+		//isse upar wali line thi pehle check karne ke liye ab ye kardi faltu mein 
+        {
+            //If the collision box touches  the wall tile
+            if( myfunctions.checkCollision( mBox, tiles[ i ]->getBox() ,1) )
+            {
+                return tiles[i]->getType();
+            }
+        }
+    }
+
+    //If no wall tiles were touched
+    return false;
+}
+
+void Player::handleEvent( SDL_Event& e , Tile *tiles[])
 {
     //If a key was pressed
 	if( e.type == SDL_KEYDOWN)
     {
 
-
         switch(e.key.keysym.sym)
-        {
-            case SDLK_DOWN : if(myState.first == 0) myState.second+=1;else myState={0,4};break;
+        {   
+            case SDLK_DOWN : if(myState.first == 0) myState.second+=1 ;else myState={0,4};break;
             case SDLK_LEFT : if(myState.first == 1) myState.second+=1;else myState={1,4};break;
             case SDLK_RIGHT : if(myState.first == 2) myState.second+=1;else myState={2,4};break;
             case SDLK_UP : if(myState.first ==3) myState.second+=1;else myState={3,4};break;
@@ -154,10 +177,31 @@ void Player::handleEvent( SDL_Event& e )
 
         }
     }
+
+if(onSpecialSquare(tiles)){
+
+
+    if((e.type==SDL_KEYDOWN) && (e.key.keysym.sym==SDLK_1)){
+        switch(onSpecialSquare(tiles))
+        {
+            case 1 : if(!hasYulu)GetYulu(); else DropYulu(); break;
+            case 2 : EatFood(0);break;
+            
+        }
+    }
+    }
 }
 
-void Player::move( Tile *tiles[] )
-{
+void Player::updateParams( Tile *tiles[] )
+{   
+    //targetTime is the time set when a process starts
+    if(*processGoingOn && gameTimer->getTicks()>=targetTime){
+        spending=false;happying=false;recharging=false;
+        mSpendRate=0;mHappyRate=0;mRechargeRate=0;
+        *processGoingOn=false;
+    }
+
+    
     //Move the Player left or right
     mBox.x += mVelX;
 
@@ -176,6 +220,17 @@ void Player::move( Tile *tiles[] )
     {
         //move back
         mBox.y -= mVelY;
+    }
+
+    
+    if(spending){
+        myMoney+=mSpendRate;
+    }
+    if(happying){
+        myHappiness+=mHappyRate;
+    }
+    if(recharging){
+        myHealth+=mRechargeRate;
     }
 }
 
@@ -217,10 +272,12 @@ void Player::render( SDL_Rect &camera  )
 	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,48,80 , &myClip);
     PlayerHealthTexture.render(gRenderer , 400 , 0 ) ; 
     PlayerHappinessTexture.render(gRenderer, 400 , 50);
-    PlayerMoneyTexture.render(gRenderer,400 , 50) ; 
+    PlayerMoneyTexture.render(gRenderer,400 , 100) ; 
 
 
-
+     HealthBar = { 500 , 5, (int)(myHealth), 20 };
+    HappinessBar= {500 ,45, (int)(myHappiness) , 20};
+	MoneyBar= {500 ,85, (int)(myMoney) , 20};
     
     SDL_SetRenderDrawColor( gRenderer, 0x00, 0xFF, 0x00, 0xFF );		
     SDL_RenderFillRect( gRenderer, &HealthBar );
@@ -239,21 +296,87 @@ void Player::close(){
     PlayerHappinessTexture.free();
 }
 
-// void Player :: EatFood(int type){
-//     myHealth+=60 ; 
-// 	if(myHealth>100)myHealth=100;
-//     myMoney
-// }
+void Player :: EatFood(int type){
+    //Hostel Food for type 0 , Shop food for type 1 
+    
+    *processGoingOn=true;
+    targetTime=(gameTimer->getTicks())+5000 ; 
+    recharging=true;
+    mRechargeRate=1 ; 
+    if(type==1) mSpendRate=-1;
+	if(myHealth>100)myHealth=100;
+    
+}
 
-// void Player :: GetYulu(){
-//     myHealth+=60 ; 
-// 	if(myHealth>100)myHealth=100;
-// }
-// void Player :: EatFood(){
-//     myHealth+=60 ; 
-// 	if(myHealth>100)myHealth=100;
-// }
+void Player :: GetYulu(){
+    if(!hasYulu){
+    Player_VEL +=15;
+    spending=true;
+    mSpendRate = -0.02;
+    hasYulu =true;}
+}
+void Player :: DropYulu(){
+    if(hasYulu){
+        Player_VEL-=15;
+        spending=false;
+        mSpendRate=0;
+        hasYulu=false;
+    }
+}
+
+void Player::Play(){
+    *processGoingOn=true;
+    targetTime=(gameTimer->getTicks())+5000 ; 
+    mHappyRate=5;
+    mRechargeRate=-2;
+}
+
+// void GetYulu(){
+		// 	mySpeed=20;
+		// 	hasYulu =true;
+		// 	moneyDecreaserate=-1;
+		// }
+
+		// void LeaveYulu(){
+		// 	mySpeed=10;
+		// 	hasYulu=false;
+		// 	moneyDecreaserate=0;
+		// }
+		// void SubmitAssignment(){
+		// 	if(Assignments>0){Assignment-=1;}
+			
+		// }
+		// void TakeBall(){
+		// 	NumBalls+=1;
+		// }
+		// void GiveBall(){
+		// 	if(NumBalls>0){NumBalls-=1;}
+		// }
+		// void sleep(){
+		// 	myHealth=100;
+		// }
+		// void playChess(){
+
+		// }
+		// void Dance(){
+
+		// }
+		// void Quizzing(){
+
+		// }
+		// void Play(){
+		// 	happiness++
+		// 	energy--
+		// }
+		// void study(){
+		// 	energy--;
+		// 	happiness++
+		// }
 
 void Player :: setTimer(LTimer * timer){
     gameTimer=timer;
+}
+
+void Player :: setProcess(bool *p){
+        processGoingOn=p;
 }

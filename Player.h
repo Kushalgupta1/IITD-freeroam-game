@@ -23,7 +23,7 @@ class Player
 
 
 
-
+		bool* processGoingOn=NULL;
         int* SCREEN_WIDTH ;
         int* SCREEN_HEIGHT;
         const int LEVEL_WIDTH = 12800;
@@ -32,22 +32,23 @@ class Player
         const int TILE_HEIGHT = 32;
         const int LAYER1_TOTAL_TILES = 80000;
 		const int LAYER2_TOTAL_TILES = 80000;
+		const int LAYER3_TOTAL_TILES= 80000;
 		//The dimensions of the Player
 		static const int Player_WIDTH = 48;
 		static const int Player_HEIGHT = 80;
 
 		//Maximum axis velocity of the Player
-		int Player_VEL = 10;
+		int Player_VEL =10;
 
         functions myfunctions  ;
 
 		SDL_Color textColor = { 0, 0, 0 }; // setting color to black , you may even keep different colors for Happiness and health 
 		TTF_Font *myFont = NULL ;
 
-
+		void setProcess(bool *p);
 		LTexture  PlayerBodyTexture  ; 
 		//Initializes the variables
-		void Constructor(SDL_Renderer* myRenderer , int* width , int* height);
+		void Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string* GameMessage);
 		//This is the constructor of the player, takes in a renderer and sets that
 
 
@@ -55,15 +56,25 @@ class Player
 		LTexture PlayerHappinessTexture; 
 		LTexture PlayerMoneyTexture;
 
+		bool hasYulu=false;
 
+		bool moving =false; 
+		bool spending =false ; 
+		bool happying=false;
+		bool recharging =false; 
+		double mSpendRate ; 
+		double mRechargeRate;
+		double mHappyRate;
 
 		bool loadPlayer(); 
+		int targetTime;
 
 		//Takes key presses and adjusts the Player's velocity
-		void handleEvent( SDL_Event& e );
+		void handleEvent(  SDL_Event& e , Tile *tiles[]);
 
-		//Moves the Player and check collision against tiles
-		void move( Tile *tiles[] );
+		//Updates the Player position and check collision against tiles, also update player health according to health velocity or decrease money according to money velocity 
+
+		void updateParams( Tile *tiles[] );
 
 		//Centers the camera over the Player
 		void setCamera( SDL_Rect &camera );
@@ -73,7 +84,7 @@ class Player
 
         bool touchesWall(Tile* tiles[] ) ; 
 
-		
+		int onSpecialSquare(Tile* tiles[] );
 
 		int Assignments ; 
 		int Money;
@@ -86,55 +97,18 @@ class Player
 		//Collision box of the Player
 		SDL_Rect mBox;
 
-		double myHealth=100; 
+		double myHealth=30; 
 		double myHappiness=50;
 		double myMoney = 100 ; 
 
-		map<int , void (*) (int)>  executeFunc; 
+		
+		void EatFood(int type); 
 
-		void EatFood(int type){}; 
+		void GetYulu();
+		void DropYulu();
+		void Play();
 
-		// void GetYulu(){
-		// 	mySpeed=20;
-		// 	hasYulu =true;
-		// 	moneyDecreaserate=-1;
-		// }
-
-		// void LeaveYulu(){
-		// 	mySpeed=10;
-		// 	hasYulu=false;
-		// 	moneyDecreaserate=0;
-		// }
-		// void SubmitAssignment(){
-		// 	if(Assignments>0){Assignment-=1;}
-			
-		// }
-		// void TakeBall(){
-		// 	NumBalls+=1;
-		// }
-		// void GiveBall(){
-		// 	if(NumBalls>0){NumBalls-=1;}
-		// }
-		// void sleep(){
-		// 	myHealth=100;
-		// }
-		// void playChess(){
-
-		// }
-		// void Dance(){
-
-		// }
-		// void Quizzing(){
-
-		// }
-		// void Play(){
-		// 	happiness++
-		// 	energy--
-		// }
-		// void study(){
-		// 	energy--;
-		// 	happiness++
-		// }
+		std::string *message ; 
 
 
 		LTimer* gameTimer ; 
