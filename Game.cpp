@@ -49,6 +49,7 @@ LWindow gWindow ;
 
 //This is the music that will play in the backgorund 
 Mix_Music *BackgroundMusic = NULL;
+// Mix_Chunk *mySound = NULL;
 
 
 std::string message=" Hello " ; 
@@ -111,7 +112,7 @@ bool init()
 
 	gameState = 0 ; 
 	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0 )
 	{
 		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
 		success = false;
@@ -165,7 +166,7 @@ bool init()
 					success = false;
 				}
 
-				if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+				if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 16384) < 0 )
 				{
 					printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
 					success = false;
@@ -200,6 +201,13 @@ bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[])
 		printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
 		success = false;
 	}
+
+	// mySound = Mix_LoadWAV( "mixkit-quick-win-video-game-notification-269.wav" );
+	// if( mySound == NULL )
+	// {
+	// 	printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+	// 	return false;
+	// }
 
 	
 	if( !player1.loadPlayer() )
@@ -276,7 +284,10 @@ void close( Tile* TilesLayer1[] , Tile* TilesLayer2[]  )
 
 	// this is to close the background music 
 	Mix_FreeMusic( BackgroundMusic );
+	// Mix_FreeChunk(mySound);
+
 	BackgroundMusic = NULL;
+	// mySound=NULL;
 
 	gRenderer = NULL;
 
@@ -284,6 +295,7 @@ void close( Tile* TilesLayer1[] , Tile* TilesLayer2[]  )
 		Textures[i].free();
 	}
 	//Quit SDL subsystems
+	Mix_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }
@@ -585,6 +597,7 @@ int main( int argc, char* args[] )
 
 			//Start counting frames per second
 			int countedFrames = 0;
+				Mix_PlayMusic( BackgroundMusic, -1);
 			fpsTimer.start();
 
 			//While application is running
@@ -625,8 +638,8 @@ int main( int argc, char* args[] )
 
 			//this is the condition when game has started
 			else{
+				// Mix_PlayChannel( -1, mySound, 1 );
 				gameStartButton.close();
-				Mix_PlayMusic( BackgroundMusic, 0);
 
 				while( SDL_PollEvent( &e ) != 0  )
 				{
@@ -635,6 +648,8 @@ int main( int argc, char* args[] )
 					{
 						quit = true;
 						Mix_HaltMusic(); // not sure if this is required
+						Mix_HaltMusic();
+						Mix_Quit();
 					}
 
 					//Handle input for the Player

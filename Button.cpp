@@ -1,10 +1,14 @@
 #include "Button.h"
 #include "texture.h"
+#include <SDL2/SDL_mixer.h>
 
 LButton::LButton()
 {
 	mPosition.x = 0;
 	mPosition.y = 0;
+	 Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 );
+				
+
 
 	// this is teh sprite associated with the buttion 
 }
@@ -60,7 +64,8 @@ void LButton::handleEvent( SDL_Event* e  ,int NewState)
 		if( inside )
 		{
 			myState =1 ;
-		}
+			// Mix_PlayChannel( -1, mySound, 1 );
+		} 
 		//Mouse is inside button
 		
 	}
@@ -152,14 +157,21 @@ bool LButton :: InitialiseButton(int type ,LTimer* timer, int* State , double a,
         printf("Problem in loading button texture from image file %s \n",PrimaryImage);
         return false;
     }
-    if(!SecondaryImage.compare("")!=0){
+    if(SecondaryImage.compare("")!=0){
 
         if(!MyTexture2.loadFromFile(SecondaryImage,gRenderer)) {
         printf("Problem in loading button texture from image file %s \n",SecondaryImage);
         return false;
-    }
+    }}
 
-    }
+	mySound = Mix_LoadWAV( "mixkit-quick-win-video-game-notification-269.wav" );
+	if( mySound == NULL )
+	{
+		printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+		return false;
+	}
+
+    
     return true;
 
 
@@ -170,4 +182,6 @@ bool LButton :: InitialiseButton(int type ,LTimer* timer, int* State , double a,
 	void LButton :: close(){
 			MyTexture1.free();
 			MyTexture2.free();
+			Mix_FreeChunk(mySound);
+			mySound=NULL;
 	} 

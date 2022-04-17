@@ -4,6 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include "texture.h"
 #include "timer.h"
+#include <SDL2/SDL_mixer.h>
 
 class LButton
 {
@@ -55,6 +56,7 @@ class LButton
         SDL_Renderer* gRenderer;
         LTimer* gameTimer ; 
         int myState=0;
+        Mix_Chunk *mySound = NULL;
 
 
 };
