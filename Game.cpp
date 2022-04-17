@@ -19,13 +19,14 @@ and may not be redistributed without written permission.*/
 #include "Button.h"
 #include "timer.h"
 #include <SDL2/SDL_mixer.h>
+#include<sstream>>
 
 // #include "camera.h"
 
 
 //Screen dimension constants
 #include <sstream>
-const int SCREEN_FPS = 60;
+const int SCREEN_FPS = 30;
 const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 
 
@@ -76,7 +77,8 @@ bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[]  )
 int gameState = 0 ; // State =0  is for not started, state=1 is for started . 
 
 
-
+string player1name = "Enter Player Name"; 
+string player2name = "Enter Player Name";
 
 vector<LTexture> Textures(2) ; 
 vector<std::string> Images{"SmallImage.png","BigImage.png"}; 
@@ -90,8 +92,10 @@ SDL_Renderer* gRenderer = NULL;
 //Scene textures
 
 Player player1 ; 
+Player player2;
 LTexture gTileTexture1;
 LTexture gTileTexture2;
+LTexture gInputTextTexture;
 LTexture StartTextureSmall;
 LTexture StartTextureLarge;
 
@@ -172,7 +176,9 @@ bool init()
 					success = false;
 				}
 
-				player1.Constructor(gRenderer,&gWindow.mWidth,&gWindow.mHeight,&message);
+				player1.Constructor(gRenderer,&gWindow.mWidth,&gWindow.mHeight,&message,12,4,95,159,80,48,"SpritePlayer1.png",4 ," " );
+				player2.Constructor(gRenderer,&gWindow.mWidth,&gWindow.mHeight,&message,9,4,64,64,64,64,"player2.png",4 , " ");
+				 SDL_StartTextInput();
 
 			} 
 		}
@@ -188,7 +194,7 @@ bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[])
 	//Loading success flag
 	bool success = true;
 
-	 textFont = TTF_OpenFont( "EvilEmpire-4BBVK.ttf", 28 );
+	 textFont = TTF_OpenFont( "EvilEmpire-4BBVK.ttf", 35 );
 	if( textFont == NULL )
 	{
 		printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
@@ -215,6 +221,14 @@ bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[])
 		printf( "Failed to load Pla yer !\n" );
 		success = false;
 	}
+
+	if( !player2.loadPlayer() )
+	{
+		printf( "Failed to load Pla yer !\n" );
+		success = false;
+	}
+	SDL_Color Black= {0,0,0,0xFF};
+	
 
 	//Load tile texture
 	if( !gTileTexture1.loadFromFile( "TILESET_campus_layer1&2.png" ,gRenderer) )
@@ -273,11 +287,14 @@ void close( Tile* TilesLayer1[] , Tile* TilesLayer2[]  )
 		 }
 	}
 
-	//Free loaded images
+	 //Disable text input
+    SDL_StopTextInput();
 	player1.close();
+	player2.close();
 	gTileTexture1.free();
 	gTileTexture2.free();
 
+	//Free loaded images
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
 	gWindow.free();
@@ -523,7 +540,7 @@ bool setTiles( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[] )
 }
  
 
-void displayText(SDL_Renderer* gRenderer ,std::string sentence , int WindowWidth , int WindowHeight){
+void displayText(SDL_Renderer* gRenderer ,std::string sentence , int WindowWidth , int WindowHeight , double textBoxX , double textBoxY , double textBoxWidth , double textBoxHeight , double sentenceX,double sentenceY){
 	LTexture myTexture;
 	SDL_Color textColor={0,0,0};
 	if(!myTexture.loadFromRenderedText(sentence ,textColor ,  textFont,gRenderer )){
@@ -531,16 +548,19 @@ void displayText(SDL_Renderer* gRenderer ,std::string sentence , int WindowWidth
 
 	}
 
-	SDL_Rect textbox = { WindowWidth / 5, WindowHeight*9/10, WindowWidth*2 / 3, WindowHeight/10};
+	SDL_Rect textbox = { (int)(((double)(WindowWidth))*textBoxX),(int)(((double)(WindowHeight))*textBoxY), (int)(((double)(WindowWidth))*textBoxWidth), (int)(((double)(WindowHeight))*textBoxHeight)};
+	
 	SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );		
 	SDL_RenderFillRect( gRenderer, &textbox );
 
 	// myTexture.render(gRenderer,WindowWidth/3 , WindowHeight*9/10, WindowWidth/3 , WindowHeight/11 );
-	myTexture.render(gRenderer ,WindowWidth/3 , WindowHeight*12/13 );
+	myTexture.render(gRenderer ,(int)(((double)(WindowWidth))*sentenceX) , (int)(((double)(WindowHeight))*sentenceY) );
 	myTexture.free();
 
 
 }
+
+
 
 int main( int argc, char* args[] )
 {
@@ -577,6 +597,7 @@ int main( int argc, char* args[] )
 //The frames per second timer
 			bool processGoingOn =false;
 			player1.setProcess(&processGoingOn);
+			player2.setProcess(&processGoingOn);
 			LTimer fpsTimer;
 
 			//The frames per second cap timer
@@ -585,19 +606,27 @@ int main( int argc, char* args[] )
 			LTimer gameTimer;
 			player1.setTimer(&gameTimer);
 			
+			
+			bool bgplaying=false;
+			bool renderText = true;
 
 			LButton gameStartButton; 
-			gameStartButton.InitialiseButton(1,&gameTimer,&gameState,0.4,0.35,0.2,0.3,"audio",gRenderer,"start-up.png","start-down.png");
+			gameStartButton.InitialiseButton(1,&gameTimer,&gameState,0.4,0.35,0.2,0.3,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"start-up.png","start-down.png");
 
-			LButton gamePauseButton;
+			LButton gameInfoButton;
+			gameInfoButton.InitialiseButton(1,&gameTimer,&gameState,0.05,0.05,0.1,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"start-up.png","start-down.png");
 	
 			LButton gameResumeButton; 
+			gameResumeButton.InitialiseButton(1,&gameTimer,&gameState,0.05,0.05,0.1,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"start-up.png","start-down.png");
+
+			player1.updateScreen(&gWindow.mWidth , &gWindow.mHeight);	
+			player2.updateScreen(&gWindow.mWidth , &gWindow.mHeight);
+
 			//In memory text stream
 			std::stringstream timeText;
 
 			//Start counting frames per second
 			int countedFrames = 0;
-				Mix_PlayMusic( BackgroundMusic, -1);
 			fpsTimer.start();
 
 			//While application is running
@@ -615,36 +644,95 @@ int main( int argc, char* args[] )
 					{
 						quit = true;
 					}
+					else if( e.type == SDL_KEYDOWN )
+                    {
+                        //Handle backspace
+                        if( e.key.keysym.sym == SDLK_BACKSPACE && player1name.length() > 0 )
+                        {
+                            //lop off character
+                            player1name.pop_back();
+                            renderText = true;
+                        }
+                        //Handle copy
+                        else if( e.key.keysym.sym == SDLK_c && SDL_GetModState() & KMOD_CTRL )
+                        {
+                            SDL_SetClipboardText( player1name.c_str() );
+                        }
+                        //Handle paste
+                        else if( e.key.keysym.sym == SDLK_v && SDL_GetModState() & KMOD_CTRL )
+                        {
+                            player1name = SDL_GetClipboardText();
+                            renderText = true;
+                        }
+                    }
+					else if( e.type == SDL_TEXTINPUT )
+                    {
+                        //Not copy or pasting
+                        if( !( SDL_GetModState() & KMOD_CTRL && ( e.text.text[ 0 ] == 'c' || e.text.text[ 0 ] == 'C' || e.text.text[ 0 ] == 'v' || e.text.text[ 0 ] == 'V' ) ) )
+                        {
+                            //Append character
+                            player1name += e.text.text;
+                            renderText = true;
+                        }
+                    }
+
 
 					//Handle input for the Player
 					gWindow.handleEvent( e );
 					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameStartButton.handleEvent(&e , 1);
 
 				}
 
 				if( !gWindow.isMinimized() ){
-
+					
+					
+					
 					SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );
 					SDL_RenderClear( gRenderer );
 					if(gWindow.mWidth==640 && gWindow.mHeight==480)
 					Textures[0].render(gRenderer,0,0,gWindow.mWidth,gWindow.mHeight);
 					else Textures[1].render(gRenderer,0,0,gWindow.mWidth,gWindow.mHeight);
 					gameStartButton.render();
+
+					//Rerender text if needed
+                if( renderText )
+                {   
+                    //Text is not empty
+                    if( player1name != "" )
+                    {
+                        //Render new text
+                        displayText(gRenderer,player1name,gWindow.mWidth,gWindow.mHeight, 0.40,0.15,0.5,0.10,0.43,0.13);
+                    }
+                    //Text is empty
+                    else
+                    {
+                        //Render space texture
+                        displayText(gRenderer," ",gWindow.mWidth,gWindow.mHeight, 0.40,0.15,0.5,0.10,0.43,0.57);
+                    }
+                }
+
 					SDL_RenderPresent(gRenderer);
+					
 				}
 
 			}
 
 			//this is the condition when game has started
-			else{
+			else if (gameState==1){
+				player1.setName(player1name);
+				player2.setName(player2name);
+				if(!bgplaying)
+				{Mix_PlayMusic( BackgroundMusic, -1);bgplaying=true;gameStartButton.close();}
 				// Mix_PlayChannel( -1, mySound, 1 );
-				gameStartButton.close();
+				
 
 				while( SDL_PollEvent( &e ) != 0  )
 				{
 					//User requests quit
-					if( e.type == SDL_QUIT )
+					if( e.type == SDL_QUIT ) 
 					{
 						quit = true;
 						Mix_HaltMusic(); // not sure if this is required
@@ -654,17 +742,21 @@ int main( int argc, char* args[] )
 
 					//Handle input for the Player
 					gWindow.handleEvent( e );
-					player1.updateScreen(&gWindow.mWidth , &gWindow.mHeight);
+					if( !gWindow.isMinimized() && !processGoingOn ){player1.handleEvent( e ,tileset3 );}
+					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameInfoButton.handleEvent(&e , 2);
+					
 					
 
 
-					if( !gWindow.isMinimized() && !processGoingOn ){player1.handleEvent( e ,tileset3 );}
 				}
 
 
 				if( !gWindow.isMinimized() ){
 				//Move the dot
-				player1.updateParams( tileset2 ,tileset3); //movement will revert only on base of tileset2
+				player1.updateParams( tileset2 ,tileset3 , player2.mBox ); //movement will revert only on base of tileset2
 				player1.setCamera( camera);
 
 				//Clear screen
@@ -686,11 +778,49 @@ int main( int argc, char* args[] )
 				//Render dot
 				
 				player1.render( camera  );
-
+				player2.renderOtherPlayer(camera);
+				gameInfoButton.render();
 				//Update screen
-				displayText(gRenderer,message,gWindow.mWidth,gWindow.mHeight) ; 
+				displayText(gRenderer,message,gWindow.mWidth,gWindow.mHeight,0.20,0.90,0.66,0.10,0.33,0.923) ; 
 				SDL_RenderPresent( gRenderer );}
 			}
+
+			else if(gameState==2){
+				
+				
+				while( SDL_PollEvent( &e ) != 0)
+				{
+					//User requests quit
+					if( e.type == SDL_QUIT )
+					{
+						quit = true;
+					}
+
+					//Handle input for the Player
+					gWindow.handleEvent( e );
+					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					
+					gameResumeButton.handleEvent(&e , 1);
+
+				}
+
+				if( !gWindow.isMinimized() ){
+
+					SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );
+					SDL_RenderClear( gRenderer );
+					if(gWindow.mWidth==640 && gWindow.mHeight==480)
+					Textures[0].render(gRenderer,0,0,gWindow.mWidth,gWindow.mHeight);
+					else Textures[1].render(gRenderer,0,0,gWindow.mWidth,gWindow.mHeight);
+					gameResumeButton.render();
+					SDL_RenderPresent(gRenderer);
+				}
+ 
+
+			} // Pause music , show tasks pending , can go to state 1 by pressing resume button 
+			else if(gameState==3){} // Game over , display winner. 
+
 				 ++countedFrames;
 
 				// If frame finished early

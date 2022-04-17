@@ -10,18 +10,27 @@
 #include <utility>
 
 
-void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string *GameMessage)
+void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string* GameMessage , int CycleX , int CycleY , int PlayerSpriteWidth , int PlayerSpriteHeight , int PlayerRenderHeight , int PlayerRenderWidth , string SpriteSheet , int bestState , string myname)
 {
     //Initialize the collision box
     mBox.x = 0;
     mBox.y = 0;
-	mBox.w = Player_WIDTH;
-	mBox.h = Player_HEIGHT;
+	mBox.w = PlayerRenderWidth;
+	mBox.h = PlayerRenderHeight;
     SCREEN_WIDTH=width;
     SCREEN_HEIGHT=height;
     message=GameMessage;
-
+    myCycleX=CycleX;
+    myCycleY = CycleY;
+    mySpriteWidth = PlayerSpriteWidth;
+    mySpriteHeight = PlayerSpriteHeight;
+    myRenderHeight = PlayerRenderHeight;
+    myRenderWidth = PlayerRenderWidth ; 
+    myBestState = bestState ; 
+    mySpriteSheet = SpriteSheet;
     gRenderer = myRenderer ; 
+    myName=myname;
+
 
     if (TTF_Init()==-1){
         printf("Failed to Initialise Player");
@@ -32,6 +41,11 @@ void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , s
     //Initialize the velocity
     mVelX = 0;
     mVelY = 0;
+}
+
+//used to set name of the player 
+void Player :: setName(std::string inputName ){
+    myName=inputName;
 }
 
 bool Player :: loadPlayer()
@@ -45,7 +59,7 @@ bool Player :: loadPlayer()
 	}
 
     printf("Was here"); 
-    if( ! (PlayerBodyTexture.loadFromFile( "SpritePlayer1.png" ,gRenderer)) )
+    if( ! (PlayerBodyTexture.loadFromFile( mySpriteSheet ,gRenderer)) )
 	{
 		printf( "Failed to load Playe r texture!\n" );
 		return false;
@@ -128,15 +142,15 @@ void Player::handleEvent( SDL_Event& e , Tile *tiles[])
 
         switch(e.key.keysym.sym)
         {   
-            case SDLK_DOWN : if(myState.first == 0) myState.second+=1 ;else myState={0,4};break;
-            case SDLK_LEFT : if(myState.first == 1) myState.second+=1;else myState={1,4};break;
-            case SDLK_RIGHT : if(myState.first == 2) myState.second+=1;else myState={2,4};break;
-            case SDLK_UP : if(myState.first ==3) myState.second+=1;else myState={3,4};break;
+            case SDLK_DOWN : if(myState.first == 0) myState.second+=1 ;else myState={0,myBestState};break;
+            case SDLK_LEFT : if(myState.first == 1) myState.second+=1;else myState={1,myBestState};break;
+            case SDLK_RIGHT : if(myState.first == 2) myState.second+=1;else myState={2,myBestState};break;
+            case SDLK_UP : if(myState.first ==3) myState.second+=1;else myState={3,myBestState};break;
 
             
         }
-        if (myState.second <0 ) myState.second+=12;
-        if(myState.second>=12) myState.second-=12;
+        if (myState.second <0 ) myState.second+=myCycleX;
+        if(myState.second>=myCycleX) myState.second-=myCycleX;
         
 
         //Adjust the velocity
@@ -192,7 +206,7 @@ if(onSpecialSquare(tiles)){
     }
 }
 
-void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] )
+void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] , SDL_Rect player2)
 {   
     //targetTime is the time set when a process starts
     if(*processGoingOn && gameTimer->getTicks()>=targetTime){
@@ -206,7 +220,7 @@ void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] )
     mBox.x += mVelX;
 
     //If the Player went too far to the left or right or touched a wall
-    if( ( mBox.x < 0 ) || ( mBox.x + Player_WIDTH > LEVEL_WIDTH ) || touchesWall( tileset2 ) )
+    if( ( mBox.x < 0 ) || ( mBox.x + myRenderWidth > LEVEL_WIDTH ) || touchesWall( tileset2 ) || myfunctions.checkCollision(mBox,player2,0))
     {
         //move back
         mBox.x -= mVelX;
@@ -216,7 +230,7 @@ void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] )
     mBox.y += mVelY;
 
     //If the Player went too far up or down or touched a wall
-    if( ( mBox.y < 0 ) || ( mBox.y + Player_HEIGHT > LEVEL_HEIGHT ) || touchesWall( tileset2 ) )
+    if( ( mBox.y < 0 ) || ( mBox.y + myRenderHeight> LEVEL_HEIGHT ) || touchesWall( tileset2 ) )
     {
         //move back
         mBox.y -= mVelY;
@@ -250,8 +264,8 @@ void Player ::updateScreen(int* width, int* height){
 void Player::setCamera( SDL_Rect &camera )
 {
 	//Center the camera over the Player
-	(camera).x = ( mBox.x + Player_WIDTH / 2 ) - *SCREEN_WIDTH / 2;
-	(camera).y = ( mBox.y + Player_HEIGHT / 2 ) - *SCREEN_HEIGHT / 2;
+	(camera).x = ( mBox.x + myRenderWidth / 2 ) - *SCREEN_WIDTH / 2;
+	(camera).y = ( mBox.y + myRenderHeight / 2 ) - *SCREEN_HEIGHT / 2;
     (camera).w = *SCREEN_WIDTH  ;
     (camera).h = *SCREEN_HEIGHT  ;
 	//Keep the camera in bounds
@@ -275,17 +289,60 @@ void Player::setCamera( SDL_Rect &camera )
 
 void Player::render( SDL_Rect &camera  )
 {
-    SDL_Rect myClip ={ 95*myState.second , 159*myState.first, 95,159};
+    SDL_Rect myClip ={ mySpriteWidth*myState.second , mySpriteHeight*myState.first, mySpriteWidth,mySpriteHeight};
     //Show the Player
-	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,48,80 , &myClip);
-    PlayerHealthTexture.render(gRenderer , 400 , 0 ) ; 
-    PlayerHappinessTexture.render(gRenderer, 400 , 50);
-    PlayerMoneyTexture.render(gRenderer,400 , 100) ; 
+
+    if( !PlayerNameTexture.loadFromRenderedText( myName, textColor ,myFont, gRenderer) )
+	{
+		printf( "Failed to load Play er texture!\n" );
+	}
+
+	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,myRenderWidth,myRenderHeight , &myClip);
+    PlayerNameTexture.render(gRenderer , *SCREEN_WIDTH -150 ,0);
+    PlayerHealthTexture.render(gRenderer , *SCREEN_WIDTH-180 , 40 ) ; 
+    PlayerHappinessTexture.render(gRenderer, *SCREEN_WIDTH-204, 80);
+    PlayerMoneyTexture.render(gRenderer,*SCREEN_WIDTH-180 , 140) ; 
 
 
-     HealthBar = { 500 , 5, (int)(myHealth), 20 };
-    HappinessBar= {500 ,45, (int)(myHappiness) , 20};
-	MoneyBar= {500 ,85, (int)(myMoney) , 20};
+     HealthBar = { *SCREEN_WIDTH-104 , 45, (int)(myHealth), 20 };
+    HappinessBar= {*SCREEN_WIDTH-104 ,85, (int)(myHappiness) , 20};
+	MoneyBar= {*SCREEN_WIDTH-104 ,145, (int)(myMoney) , 20};
+    
+    SDL_SetRenderDrawColor( gRenderer, 0x00, 0xFF, 0x00, 0xFF );		
+    SDL_RenderFillRect( gRenderer, &HealthBar );
+
+    SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );		
+    SDL_RenderFillRect( gRenderer, &HappinessBar );
+
+     SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0x00, 0xFF );		
+    SDL_RenderFillRect( gRenderer, &MoneyBar );
+}
+
+void Player::NetworkUpdate(int myStateFirst, int myStateSecond, int myXcoord , int myYcoord ,int Health , int Happiness, int Money){
+    myState.first=myStateFirst;
+    myState.second = myStateSecond;
+    mBox.x = myXcoord ; 
+    mBox.y = myYcoord ; 
+    myHealth=Health;
+    myHappiness =Happiness;
+    myMoney = Money;
+}
+
+//pass player 1 or window screen width here. 
+void Player::renderOtherPlayer( SDL_Rect &camera   )
+{
+    SDL_Rect myClip ={ mySpriteWidth*myState.second , mySpriteHeight*myState.first, mySpriteWidth,mySpriteHeight};
+    //Show the Player
+	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,myRenderWidth,myRenderHeight , &myClip);
+    PlayerNameTexture.render(gRenderer , 34 , 0 );
+    PlayerHealthTexture.render(gRenderer , 4 , 40 ) ; 
+    PlayerHappinessTexture.render(gRenderer, 4, 80);
+    PlayerMoneyTexture.render(gRenderer,4 , 140) ; 
+
+
+     HealthBar = { 80, 45, (int)(myHealth), 20 };
+    HappinessBar= {100,85, (int)(myHappiness) , 20};
+	MoneyBar= {90 ,145, (int)(myMoney) , 20};
     
     SDL_SetRenderDrawColor( gRenderer, 0x00, 0xFF, 0x00, 0xFF );		
     SDL_RenderFillRect( gRenderer, &HealthBar );
@@ -302,6 +359,7 @@ void Player::close(){
     PlayerBodyTexture.free();
     PlayerHealthTexture.free();
     PlayerHappinessTexture.free();
+    PlayerNameTexture.free();
 }
 
 void Player :: EatFood(int type){
@@ -320,7 +378,7 @@ void Player :: GetYulu(){
     if(!hasYulu){
     Player_VEL +=15;
     spending=true;
-    mSpendRate = -0.02;
+    mSpendRate = -0.4;
     hasYulu =true;}
 }
 void Player :: DropYulu(){
@@ -339,17 +397,26 @@ void Player::Play(){
     mRechargeRate=-2;
 }
 
-// void GetYulu(){
-		// 	mySpeed=20;
-		// 	hasYulu =true;
-		// 	moneyDecreaserate=-1;
-		// }
+		
+		void Player::PlayChess(){
+            *processGoingOn=true;
+            mHappyRate = 0.1 ; 
+            mRechargeRate = -0.2 ;
 
-		// void LeaveYulu(){
-		// 	mySpeed=10;
-		// 	hasYulu=false;
-		// 	moneyDecreaserate=0;
-		// }
+		}
+		void Player::Sleep(){
+            *processGoingOn=true;
+            targetTime=(gameTimer->getTicks())+5000 ; 
+			mRechargeRate = 0.2;
+
+		}
+
+		void Player::Dance(){
+                *processGoingOn=true;
+            targetTime=(gameTimer->getTicks())+5000 ; 
+			mRechargeRate = 0.2;
+		}
+
 		// void SubmitAssignment(){
 		// 	if(Assignments>0){Assignment-=1;}
 			
@@ -360,15 +427,7 @@ void Player::Play(){
 		// void GiveBall(){
 		// 	if(NumBalls>0){NumBalls-=1;}
 		// }
-		// void sleep(){
-		// 	myHealth=100;
-		// }
-		// void playChess(){
 
-		// }
-		// void Dance(){
-
-		// }
 		// void Quizzing(){
 
 		// }

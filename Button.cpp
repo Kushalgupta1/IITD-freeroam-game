@@ -64,7 +64,7 @@ void LButton::handleEvent( SDL_Event* e  ,int NewState)
 		if( inside )
 		{
 			myState =1 ;
-			// Mix_PlayChannel( -1, mySound, 1 );
+			Mix_PlayChannel( -1, mySound, 0 );
 		} 
 		//Mouse is inside button
 		
@@ -106,6 +106,7 @@ void LButton::handleEvent( SDL_Event* e  ,int NewState)
 		if( inside )
 		{
 			*gameState=NewState;
+			myState=0;
 			gameTimer->start();
 		}
 		//Mouse is inside button
@@ -164,7 +165,7 @@ bool LButton :: InitialiseButton(int type ,LTimer* timer, int* State , double a,
         return false;
     }}
 
-	mySound = Mix_LoadWAV( "mixkit-quick-win-video-game-notification-269.wav" );
+	mySound = Mix_LoadWAV( audiofile.c_str() );
 	if( mySound == NULL )
 	{
 		printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
