@@ -135,12 +135,16 @@ class Player
 		void close();
 
 		SDL_Rect mBox;
-    private:
-		//Collision box of the Player
-
+		int getMyStateFirst();
+		int getMyStateSecond();
 		double myHealth=30; 
 		double myHappiness=50;
 		double myMoney = 100 ; 
+
+		pair<int,int> myState ={2,4}; 
+    private:
+		//Collision box of the Player
+
 
 		
 		void EatFood(int type); 
@@ -166,7 +170,6 @@ class Player
 		//The velocity of the Player
 		int mVelX, mVelY;
  
-		pair<int,int> myState ={2,4}; 
 		// the first part tells whether moving up or left or right or down , 
 		//the second part tells that which phase you are in right now
 		//state is initialised to 2,4

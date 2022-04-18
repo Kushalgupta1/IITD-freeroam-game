@@ -1,16 +1,20 @@
 // #include <iostream>
+// #include <fstream>
 // #include <cstdio>
+// #include <unistd.h>
 // #include <cstdlib>
 // #include <cstring>
 // #include <time.h>
 // #include <sys/socket.h>
 // #include <sys/types.h>
 // #include <netinet/in.h>
+// #include <netdb.h>
 // #include <arpa/inet.h>
-// #include <unistd.h>
-// #define  PORT 9987;
+// #include "client.h"
+// #define  PORT 9987
 
 // using namespace std;
+
 
 // struct Info{
 // 	int stateFirst;
@@ -23,7 +27,7 @@
 // 	int money;
 // };
 
-// void toNetwork(char* buffer, struct Info* mydata){
+// void  toNetwork(char* buffer, struct Info* mydata){
 // 	//32 byte buffer required
 // 	//test bit
 // 	buffer[0] = '*';
@@ -66,98 +70,98 @@
 
 // int main(int argc, char *argv[])
 // {
-// 	int serv_fd, newserv_fd, bytes_sent, bytes_recvd;
-// 	int port_no =PORT;
-// 	char in_buffer[32], out_buffer[32], player1name[64] = "sKushal", player2name[64]; 
+// 	int cli_fd, bytes_sent, bytes_recvd;
+// 	int port_no = PORT;
+// 	char in_buffer[32], out_buffer[32], player2name[16], player1name[16];
+
 // 	struct Info indata;
 // 	struct Info mydata = {42, 5, 6, 7, 8, 9, 1, 4};
 // 	bool validate_data;
 
-// 	char cli_ip[INET_ADDRSTRLEN];	
 // 	//IP address of server
 // 	char serv_ip[INET_ADDRSTRLEN]= "192.168.43.53";	
+// 	//char serv_ip[INET_ADDRSTRLEN]= "127.0.0.1";	
 
-// 	struct sockaddr_in serv_addr, cli_addr;	
+// 	struct sockaddr_in serv_addr;
+	
+// 	//if (argc != 2)
+// 	//{
+// 	//	perror("Incomplete arguments!");
+// 	//	return 1;
+// 	//}
 
-// 	//creating sever side socket	
-// 	if ( (serv_fd = socket(AF_INET, SOCK_STREAM, 0)) < -1)
+// 	if((cli_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 // 	{	
-// 		perror("Server side listening Socket could not be created!");
+// 		perror("Sorry. Socket could not be created!");
 // 		return 1;
 // 	}
-
 // 	int opt = 1;
 
-// 	if (setsockopt(serv_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+// 	if (setsockopt(cli_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
 // 		perror("setsockopt");
 // 		exit(EXIT_FAILURE);
 // 	}
 
-// 	memset(&serv_addr, 0, sizeof(serv_addr));	
-
+//     memset(&serv_addr, 0, sizeof(serv_addr));
 // 	serv_addr.sin_family = AF_INET;
 // 	serv_addr.sin_port = htons(port_no);
 
-// 	//serv_addr.sin_addr.s_addr = INADDR_ANY;
-
-// 	//Convert IPv4 addresses from text to binary form
-// 	if (inet_pton(AF_INET, serv_ip, &serv_addr.sin_addr)
-// 		<= 0) {
+// 	// Convert IPv4 addresses from text to binary form
+// 	if (inet_pton(AF_INET, serv_ip, &serv_addr.sin_addr) <= 0) {
 // 		printf(
 // 			"\nInvalid address/ Address not supported \n");
 // 		return -1;
 // 	}
-	
-// 	//binding socket
-// 	if (bind(serv_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+// 	cout << "Socket created and trying to connect\n";
+
+// 	if( connect(cli_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) <0)
 // 	{	
-// 		perror("Failed to bind!");
+// 		perror("Sorry. Could not connect to server.");
 // 		return 1;
 // 	}
 
-// 	if (listen(serv_fd, 5)== -1)
-// 	{	
-// 		perror("Failed to listen!");
-// 		return 1;
-// 	}
+// 	cout << "Connected (hopefully)\n";
 
-// 	memset(&cli_addr, 0, sizeof(cli_addr));	
-
-// 	socklen_t cli_size = sizeof(cli_addr);
-		
-// 	if ( (newserv_fd = accept(serv_fd, (struct sockaddr *)&cli_addr, &cli_size)) == -1)
-// 	{	
-// 		perror("Failed to accept from client!");
-// 		return 1;
-// 	}
-// 	inet_ntop(AF_INET, &cli_addr.sin_addr, cli_ip, INET_ADDRSTRLEN);
-// 	cout<<"Server received connections from "<<cli_ip<<endl;
-
+// 	cout<<"Enter your name : ";
+// 	cin>>player1name;
+// 	sleep(10);
 // 	do
-// 	{	
+// 	{
 // 		static int flag = 0;
-// 		memset(&player2name, 0, sizeof(player2name));
-// 		bytes_recvd = recv(newserv_fd, &player2name, sizeof(player2name), 0);
-// 		if (bytes_recvd == -1 && flag == 0)
+// 		bytes_sent = send(cli_fd, &player1name, sizeof(player1name), 0);
+// 		if (bytes_sent == -1 && flag == 0)
 // 		{
-// 			memset(&player2name, 0, sizeof(player2name));
-// 			cout<<"Could not ACQUIRE Player Information!"<<endl<<"Trying again..."<<endl; 
+// 			cout<<"PLAYER DATA NOT SENT!"<<endl<<"Trying Again...";  
 // 			continue;
 // 		}
 // 		else
-// 		{	
+// 		{		
 // 			flag = 1;
-// 			bytes_sent = send(newserv_fd, &player1name, sizeof(player1name), 0);
-// 			if (bytes_sent == -1)
-// 				cout<<"Could not SEND Player Data!"<<"Trying Again..."<<endl; 
+// 			memset(&player2name, 0, sizeof(player2name));
+// 			bytes_recvd = recv(cli_fd, &player2name, sizeof(player2name), 0);
+// 			if (bytes_recvd == -1)
+// 				cout<<"COULD NOT ACQUIRE PLAYER INFORMATION!"<<endl<<"Trying Again..."<<endl; 
 // 			else
-// 				cout<<player2name<<" has joined the game."<<endl;
+// 				cout<<"You have joined "<<player2name<<" for a game of Tic-Tac-Toe."<<endl;
 // 		}
-// 	}while(bytes_recvd == -1 || bytes_sent == -1);
+// 	}while(bytes_sent == -1 || bytes_recvd == -1);
 
 // 	for(int i = 0; i < 100; i++){
 // 		//each frame
 // 		mydata = {i, i, i, i, i, i, i, i};
+// 		//each frame
+
+// 		//sending
+// 		toNetwork(out_buffer, &mydata);
+// 		do
+// 		{
+// 			bytes_sent = send(cli_fd, &out_buffer, sizeof(out_buffer), 0);
+// 			if (bytes_sent == -1)
+// 				cout<<"Frame data not sent!"<<endl<<"Trying Again...";  
+
+// 			else if (bytes_sent != 32)
+// 				cout << "complete data not sent, what is going on???????\n";
+// 		}while(bytes_sent != 32);
 
 // 		//receiving
 // 		usleep(10000);		
@@ -165,7 +169,7 @@
 // 		{
 // 			memset(&in_buffer, 0, sizeof(in_buffer));
 
-// 			bytes_recvd = recv(newserv_fd, &in_buffer, sizeof(in_buffer), 0);
+// 			bytes_recvd = recv(cli_fd, &in_buffer, sizeof(in_buffer), 0);
 // 			if (bytes_recvd == -1)
 // 				cout<<"Frame data not received!"<<endl<<"Trying Again..."<<endl; 
 
@@ -175,27 +179,14 @@
 // 			else 
 // 				validate_data = fromNetwork(in_buffer, &indata);
 // 				if(!validate_data) {
-// 					cout << "Wrong data received\n";
+// 					cout << "Wrong data received";
 // 					bytes_recvd = -1;
 // 				}
 			
 // 		} while (bytes_recvd != 32);
 
 // 		print_data(&indata);
-
-// 		//sending
-// 		toNetwork(out_buffer, &mydata);
-// 		do
-// 		{
-// 			bytes_sent = send(newserv_fd, &out_buffer, sizeof(out_buffer), 0);
-// 			if (bytes_sent == -1)
-// 				cout<<"Frame data not sent!"<<endl<<"Trying Again...";  
-
-// 			else if (bytes_sent != 32)
-// 				cout << "complete data not sent, what is going on???????\n";
-// 		}while(bytes_sent != 32);
-
 // 	}
-// 	close(serv_fd);
-// 	close(newserv_fd);
+// 	close(cli_fd);
 // }
+

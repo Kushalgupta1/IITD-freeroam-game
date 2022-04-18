@@ -287,6 +287,13 @@ void Player::setCamera( SDL_Rect &camera )
 	}
 }
 
+int Player::getMyStateFirst(){
+    return myState.first;
+}
+int Player::getMyStateSecond(){
+    return myState.second;
+}
+
 void Player::render( SDL_Rect &camera  )
 {
     SDL_Rect myClip ={ mySpriteWidth*myState.second , mySpriteHeight*myState.first, mySpriteWidth,mySpriteHeight};
@@ -333,6 +340,11 @@ void Player::renderOtherPlayer( SDL_Rect &camera   )
 {
     SDL_Rect myClip ={ mySpriteWidth*myState.second , mySpriteHeight*myState.first, mySpriteWidth,mySpriteHeight};
     //Show the Player
+    if( !PlayerNameTexture.loadFromRenderedText( myName, textColor ,myFont, gRenderer) )
+	{
+		printf( "Failed to load Play er texture!\n" );
+	}
+
 	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,myRenderWidth,myRenderHeight , &myClip);
     PlayerNameTexture.render(gRenderer , 34 , 0 );
     PlayerHealthTexture.render(gRenderer , 4 , 40 ) ; 

@@ -19,13 +19,13 @@ and may not be redistributed without written permission.*/
 #include "Button.h"
 #include "timer.h"
 #include <SDL2/SDL_mixer.h>
-#include<sstream>>
+#include <sstream>
 
 // #include "camera.h"
 
 
 //Screen dimension constants
-#include <sstream>
+
 const int SCREEN_FPS = 30;
 const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 
@@ -63,7 +63,7 @@ bool loadMedia( Tile* TilesLayer1[] , Tile* TilesLayer2[] ,Tile* TilesLayer3[]);
 
 //Frees media and shuts down SDL
 void close( Tile* tiles[] );
-
+bool nameTaken = false;
 //Box collision detector
 bool checkCollision( SDL_Rect a, SDL_Rect b );
 
@@ -614,10 +614,17 @@ int main( int argc, char* args[] )
 			gameStartButton.InitialiseButton(1,&gameTimer,&gameState,0.4,0.35,0.2,0.3,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"start-up.png","start-down.png");
 
 			LButton gameInfoButton;
-			gameInfoButton.InitialiseButton(1,&gameTimer,&gameState,0.05,0.05,0.1,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"start-up.png","start-down.png");
-	
+			gameInfoButton.InitialiseButton(1,&gameTimer,&gameState,0.05,0.90,0.1,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"Status-up.png","Status-Down.png");
+	 
 			LButton gameResumeButton; 
-			gameResumeButton.InitialiseButton(1,&gameTimer,&gameState,0.05,0.05,0.1,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"start-up.png","start-down.png");
+			gameResumeButton.InitialiseButton(1,&gameTimer,&gameState,0.41,0.2,0.18,0.09,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"Resume-up.png","Resume-down.png");
+
+			LButton gameVolumeOnButton; 
+			gameVolumeOnButton.InitialiseButton(1,&gameTimer,&gameState,0.05,0.05,0.05,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"volume-on-up.png","volume-on-down.png");
+
+			LButton gameVolumeDownButton; 
+			gameVolumeDownButton.InitialiseButton(1,&gameTimer,&gameState,0.25,0.05,0.05,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"volume-off-up.png","volume-off-down.png");
+
 
 			player1.updateScreen(&gWindow.mWidth , &gWindow.mHeight);	
 			player2.updateScreen(&gWindow.mWidth , &gWindow.mHeight);
@@ -682,6 +689,8 @@ int main( int argc, char* args[] )
 					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeOnButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeDownButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameStartButton.handleEvent(&e , 1);
 
 				}
@@ -720,8 +729,13 @@ int main( int argc, char* args[] )
 
 			}
 
+
 			//this is the condition when game has started
 			else if (gameState==1){
+				
+				
+
+				
 				player1.setName(player1name);
 				player2.setName(player2name);
 				if(!bgplaying)
@@ -746,6 +760,16 @@ int main( int argc, char* args[] )
 					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeOnButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeDownButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					
+                    int store = gameState;
+					gameVolumeOnButton.handleEvent(&e,8);
+					if(gameState==8) {printf("sizmo");gameState==1 ; if(Mix_PausedMusic()!=1) Mix_PauseMusic(); }
+					gameVolumeDownButton.handleEvent(&e,8);
+					if(gameState==8) {gameState==1 ; if(Mix_PausedMusic()==1) Mix_ResumeMusic(); }
+                    gameState=store;
+
 					gameInfoButton.handleEvent(&e , 2);
 					
 					
@@ -779,6 +803,8 @@ int main( int argc, char* args[] )
 				
 				player1.render( camera  );
 				player2.renderOtherPlayer(camera);
+				gameVolumeDownButton.render();
+				gameVolumeOnButton.render();
 				gameInfoButton.render();
 				//Update screen
 				displayText(gRenderer,message,gWindow.mWidth,gWindow.mHeight,0.20,0.90,0.66,0.10,0.33,0.923) ; 
@@ -801,6 +827,8 @@ int main( int argc, char* args[] )
 					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeOnButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeDownButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					
 					gameResumeButton.handleEvent(&e , 1);
 
