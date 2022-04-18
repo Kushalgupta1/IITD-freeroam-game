@@ -16,7 +16,7 @@
 // #include "Window.h"
 // #include <vector>
 // #include "Button.h"
-
+// #include <fcntl.h>
 // #include <SDL2/SDL_mixer.h>
 // #include <iostream>
 // #include <fstream>
@@ -31,13 +31,15 @@
 // #include <netdb.h>
 // #include <arpa/inet.h>
 // #include <sstream>
+// #include <stdlib.h>
+
 // #define PORT 9987
 // #include <sstream>>
 
 // // #include "camera.h"
 
 // // Screen dimension constants
-// const int SCREEN_FPS = 30;
+// const int SCREEN_FPS = 60;
 // const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 
 // const int SCREEN_WIDTH = 640;
@@ -242,6 +244,8 @@
 
 //                 player1.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 12, 4, 95, 159, 80, 48, "SpritePlayer1.png", 4, " ");
 //                 player2.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 9, 4, 64, 64, 64, 64, "player2.png", 4, " ");
+//                 player2.mBox.x = 500;
+//                 player2.mBox.y = 10;
 //                 SDL_StartTextInput();
 //             }
 //         }
@@ -667,8 +671,10 @@
 //         perror("Failed to accept from client!");
 //         return 1;
 //     }
+//     // fcntl(newserv_fd, F_SETFL, fcntl(newserv_fd, F_GETFL, 0) | O_NONBLOCK);
+
 //     inet_ntop(AF_INET, &cli_addr.sin_addr, cli_ip, INET_ADDRSTRLEN);
-//     cout << "Server received connections from " << cli_ip << endl;
+//     cout << "Server received connections from " << cli_ip << "\n";
 
 //     // Start up SDL and create window
 //     if (!init())
@@ -834,8 +840,8 @@
 //                             if (bytes_recvd == -1 && flag == 0)
 //                             {
 //                                 memset(&cname, 0, sizeof(cname));
-//                                 cout << "Could not ACQUIRE Player Information!" << endl
-//                                      << "Trying again..." << endl;
+//                                 cout << "Could not ACQUIRE Player Information!" << "\n"
+//                                      << "Trying again..." << "\n";
 //                                 continue;
 //                             }
 //                             else
@@ -844,12 +850,13 @@
 //                                 bytes_sent = send(newserv_fd, &sname, sizeof(sname), 0);
 //                                 if (bytes_sent == -1)
 //                                     cout << "Could not SEND Player Data!"
-//                                          << "Trying Again..." << endl;
+//                                          << "Trying Again..." << "\n";
 //                                 else
-//                                     cout << cname << " has joined the game." << endl;
+//                                     cout << cname << " has joined the game." << "\n";
 //                                 player2name = cname;
 //                             }
 //                         } while (bytes_recvd == -1 || bytes_sent == -1);
+//                         nameTaken = true;
 //                     }
 
 //                     player1.setName(player1name);
@@ -958,26 +965,26 @@
 
 //                 ++countedFrames;
 
+//             if( (gameState != 0) && (countedFrames %3 <10) ) {
 //                 // receiving
 //                 do
 //                 {
-//                     memset(&in_buffer, 0, sizeof(in_buffer));
-
 //                     bytes_recvd = recv(newserv_fd, &in_buffer, sizeof(in_buffer), 0);
 //                     if (bytes_recvd == -1)
-//                         cout << "Frame data not received!" << endl
-//                              << "Trying Again..." << endl;
+//                         cout << "Frame data not received!" << "\n"
+//                              << "Trying Again..." << "\n";
 
 //                     else if (bytes_recvd != 32)
 //                         cout << "complete data not received, what is going on!!!\n";
 
-//                     else
+//                     else     
+
 //                         validate_data = fromNetwork(in_buffer, &indata);
-//                     if (!validate_data)
-//                     {
-//                         cout << "Wrong data received\n";
-//                         bytes_recvd = -1;
-//                     }
+//                         if (!validate_data)
+//                         {
+//                             cout << "Wrong data received\n";
+//                             bytes_recvd = -1;
+//                         }
 
 //                 } while (bytes_recvd != 32);
 //                 player2.myState.first = indata.stateFirst;
@@ -989,8 +996,6 @@
 //                 player2.myHappiness = indata.happiness;
 //                 player2.myMoney = indata.money;
 
-//                 print_data(&indata);
-
 //                 // sending
 //                 mydata = {player1.getMyStateFirst(), player1.getMyStateSecond(), player1.mBox.x, player1.mBox.y, gameState, (int)player1.myHealth, (int)player1.myHappiness, (int)player1.myMoney};
 
@@ -999,21 +1004,22 @@
 //                 {
 //                     bytes_sent = send(newserv_fd, &out_buffer, sizeof(out_buffer), 0);
 //                     if (bytes_sent == -1)
-//                         cout << "Frame data not sent!" << endl
+//                         cout << "Frame data not sent!" << "\n"
 //                              << "Trying Again...";
 
 //                     else if (bytes_sent != 32)
 //                         cout << "complete data not sent, what is going on???????\n";
 //                 } while (bytes_sent != 32);
+//             }
 
-//                 // If frame finished early
+//                 //If frame finished early
 //                 int frameTicks = capTimer.getTicks();
 //                 if (frameTicks < SCREEN_TICK_PER_FRAME)
 //                 {
 //                     // Wait remaining time
 //                     SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
 //                 }
-//                 // printf("Width is %d , and height is %d \n" ,gWindow.mWidth ,gWindow.mHeight );
+//                 printf("Width is %d , and height is %d \n" ,gWindow.mWidth ,gWindow.mHeight );
 //             }
 //         }
 
