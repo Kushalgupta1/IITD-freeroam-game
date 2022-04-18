@@ -52,6 +52,7 @@ LWindow gWindow ;
 Mix_Music *BackgroundMusic = NULL;
 // Mix_Chunk *mySound = NULL;
 
+LWindow gWindow ; 
 
 std::string message=" Hello " ; 
 
@@ -559,7 +560,6 @@ void displayText(SDL_Renderer* gRenderer ,std::string sentence , int WindowWidth
 
 
 }
-
 
 
 int main( int argc, char* args[] )
