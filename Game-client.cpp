@@ -982,9 +982,9 @@ int main(int argc, char *args[])
 
 			toNetwork(out_buffer, &mydata);
 			bytes_sent = send(cli_fd, &out_buffer, sizeof(out_buffer), 0);
-			if (bytes_sent == -1)
-				cout << "Frame data not sent"
-					 << "\n";
+			if (bytes_sent == -1) ;
+				// cout << "Frame data not sent"
+				// 	 << "\n";
 			else if (bytes_sent != 32)
 				cout << "complete data not sent, what is going on???????\n";
 

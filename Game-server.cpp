@@ -995,9 +995,9 @@ int main(int argc, char *args[])
                 {
                     // receiving
                     bytes_recvd = recv(newserv_fd, &in_buffer, sizeof(in_buffer), 0);
-                    if (bytes_recvd == -1)
-                        cout << "Frame data not received!"
-                             << "\n";
+                    if (bytes_recvd == -1);
+                        // cout << "Frame data not received!"
+                        //      << "\n";
 
                     else if (bytes_recvd != 32)
                         cout << "complete data not received, what is going on!!!\n";
