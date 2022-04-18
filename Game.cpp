@@ -582,7 +582,7 @@ int main( int argc, char* args[] )
 			printf( "Failed to load media!\n" );
 		}
 		else
-		{	
+		{	 
 			//Main loop flag
 			bool quit = false;
 
@@ -763,12 +763,12 @@ int main( int argc, char* args[] )
 					gameVolumeOnButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameVolumeDownButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					
-
+					int store = gameState;
 					gameVolumeOnButton.handleEvent(&e,8);
 					if(gameState==8) {printf("sizmo");gameState==1 ; if(Mix_PausedMusic()!=1) Mix_PauseMusic(); }
 					gameVolumeDownButton.handleEvent(&e,8);
 					if(gameState==8) {gameState==1 ; if(Mix_PausedMusic()==1) Mix_ResumeMusic(); }
-
+					gameState=store;
 					gameInfoButton.handleEvent(&e , 2);
 					
 					
