@@ -576,7 +576,7 @@ int main( int argc, char* args[] )
 		Tile* tileset2[ LAYER2_TOTAL_TILES ];
 		Tile* tileset3[LAYER3_TOTAL_TILES];
 
-		//Load media
+		// Load media
 		if( !loadMedia( tileset1 ,tileset2,tileset3))
 		{
 			printf( "Failed to load media!\n" );
@@ -684,7 +684,7 @@ int main( int argc, char* args[] )
                     }
 
 
-					//Handle input for the Player
+					// Handle input for the Player
 					gWindow.handleEvent( e );
 					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
