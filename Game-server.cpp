@@ -719,14 +719,20 @@ int main(int argc, char *args[])
             bool bgplaying = false;
             bool renderText = true;
 
-            LButton gameStartButton;
-            gameStartButton.InitialiseButton(1, &gameTimer, &gameState, 0.4, 0.35, 0.2, 0.3, "mixkit-quick-win-video-game-notification-269.wav", gRenderer, "start-up.png", "start-down.png");
+            LButton gameStartButton; 
+			gameStartButton.InitialiseButton(1,&gameTimer,&gameState,0.4,0.35,0.2,0.3,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"start-up.png","start-down.png");
 
-            LButton gameInfoButton;
-            gameInfoButton.InitialiseButton(1, &gameTimer, &gameState, 0.05, 0.05, 0.1, 0.05, "mixkit-quick-win-video-game-notification-269.wav", gRenderer, "start-up.png", "start-down.png");
+			LButton gameInfoButton;
+			gameInfoButton.InitialiseButton(1,&gameTimer,&gameState,0.05,0.92,0.1,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"Status-up.png","Status-Down.png");
+	 
+			LButton gameResumeButton; 
+			gameResumeButton.InitialiseButton(1,&gameTimer,&gameState,0.41,0.2,0.18,0.09,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"Resume-up.png","Resume-down.png");
 
-            LButton gameResumeButton;
-            gameResumeButton.InitialiseButton(1, &gameTimer, &gameState, 0.05, 0.05, 0.1, 0.05, "mixkit-quick-win-video-game-notification-269.wav", gRenderer, "start-up.png", "start-down.png");
+			LButton gameVolumeOnButton; 
+			gameVolumeOnButton.InitialiseButton(1,&gameTimer,&gameState,0.92,0.92,0.05,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"volume-on-up.png","volume-on-down.png");
+
+			LButton gameVolumeDownButton; 
+			gameVolumeDownButton.InitialiseButton(1,&gameTimer,&gameState,0.85,0.92,0.05,0.05,"mixkit-quick-win-video-game-notification-269.wav",gRenderer,"volume-off-up.png","volume-off-down.png");
 
             player1.updateScreen(&gWindow.mWidth, &gWindow.mHeight);
             player2.updateScreen(&gWindow.mWidth, &gWindow.mHeight);
@@ -787,11 +793,13 @@ int main(int argc, char *args[])
                         }
 
                         // Handle input for the Player
-                        gWindow.handleEvent(e);
-                        gameStartButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-                        gameInfoButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-                        gameResumeButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-                        gameStartButton.handleEvent(&e, 1);
+                        gWindow.handleEvent( e );
+					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeOnButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeDownButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameStartButton.handleEvent(&e , 1);
                     }
 
                     if (!gWindow.isMinimized())
@@ -891,10 +899,19 @@ int main(int argc, char *args[])
                         {
                             player1.handleEvent(e, tileset3);
                         }
-                        gameStartButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-                        gameInfoButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-                        gameResumeButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-                        gameInfoButton.handleEvent(&e, 2);
+                        gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeOnButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeDownButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+
+                    int store = gameState;
+					gameVolumeOnButton.handleEvent(&e,8);
+					if(gameState==8) {gameState=1 ; if(Mix_PausedMusic()==1) Mix_ResumeMusic(); }
+					gameVolumeDownButton.handleEvent(&e,8);
+					if(gameState==8) {printf("sizmo");gameState=1 ; if(Mix_PausedMusic()!=1) Mix_PauseMusic(); }
+					gameState=store;
+					gameInfoButton.handleEvent(&e , 2); 
                     }
 
                     if (!gWindow.isMinimized())
@@ -921,12 +938,14 @@ int main(int argc, char *args[])
 
                         // Render dot
 
-                        player1.render(camera);
-                        player2.renderOtherPlayer(camera);
-                        gameInfoButton.render();
-                        // Update screen
-                        displayText(gRenderer, message, gWindow.mWidth, gWindow.mHeight, 0.20, 0.90, 0.66, 0.10, 0.33, 0.923);
-                        SDL_RenderPresent(gRenderer);
+                        player1.render( camera  );
+				player2.renderOtherPlayer(camera);
+				displayText(gRenderer,message,gWindow.mWidth,gWindow.mHeight,0.00,0.90,1.00,0.10,0.33,0.923) ; 
+				gameVolumeDownButton.render();
+				gameVolumeOnButton.render();
+				gameInfoButton.render();
+				//Update screen
+				SDL_RenderPresent( gRenderer );
                     }
                 }
 
@@ -942,12 +961,14 @@ int main(int argc, char *args[])
                         }
 
                         // Handle input for the Player
-                        gWindow.handleEvent(e);
-                        gameStartButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-                        gameInfoButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-                        gameResumeButton.UpdateParameters(gWindow.mWidth, gWindow.mHeight);
-
-                        gameResumeButton.handleEvent(&e, 1);
+                        gWindow.handleEvent( e );
+					gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameResumeButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeOnButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					gameVolumeDownButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
+					
+					gameResumeButton.handleEvent(&e , 1);
                     }
 
                     if (!gWindow.isMinimized())
