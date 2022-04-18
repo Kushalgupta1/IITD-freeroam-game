@@ -44,7 +44,7 @@ void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , s
     //initialise the tasks the player tasks to be performed . 
     srand(time(0));
     while(numtasks<5){
-        x=1 + (rand()%5);
+        x=1 + (rand()%16);
         if(myPendingTasks.find(x)!=myPendingTasks.end()){}
         else{myPendingTasks.insert(x);numtasks++;}
 
