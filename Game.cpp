@@ -52,7 +52,6 @@ LWindow gWindow ;
 Mix_Music *BackgroundMusic = NULL;
 // Mix_Chunk *mySound = NULL;
 
-LWindow gWindow ; 
 
 std::string message=" Hello " ; 
 
@@ -562,6 +561,7 @@ void displayText(SDL_Renderer* gRenderer ,std::string sentence , int WindowWidth
 }
 
 
+
 int main( int argc, char* args[] )
 {
 	//Start up SDL and create window
@@ -763,12 +763,11 @@ int main( int argc, char* args[] )
 					gameVolumeOnButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameVolumeDownButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					
-                    int store = gameState;
+
 					gameVolumeOnButton.handleEvent(&e,8);
 					if(gameState==8) {printf("sizmo");gameState==1 ; if(Mix_PausedMusic()!=1) Mix_PauseMusic(); }
 					gameVolumeDownButton.handleEvent(&e,8);
 					if(gameState==8) {gameState==1 ; if(Mix_PausedMusic()==1) Mix_ResumeMusic(); }
-                    gameState=store;
 
 					gameInfoButton.handleEvent(&e , 2);
 					
