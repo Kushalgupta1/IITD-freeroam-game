@@ -188,13 +188,13 @@ void Player::handleEvent( SDL_Event& e , Tile *tiles[])
     {
         //Adjust the velocity
 
-        switch(e.key.keysym.sym)
-        {
-            case SDLK_DOWN : myState={0,4};break;
-            case SDLK_LEFT : myState={1,4};break;
-            case SDLK_RIGHT : myState={2,4};break;
-            case SDLK_UP : myState={3,4};break;
-        }
+        // switch(e.key.keysym.sym)
+        // {
+        //     case SDLK_DOWN : myState={0,4};break;
+        //     case SDLK_LEFT : myState={1,4};break;
+        //     case SDLK_RIGHT : myState={2,4};break;
+        //     case SDLK_UP : myState={3,4};break;
+        // }
 
         // if (myState.second <0 ) myState.second+=12; 
         // if(myState.second>12) myState.second-=12;
@@ -323,6 +323,7 @@ void Player::render( SDL_Rect &camera  )
 		printf( "Failed to load Play er texture!\n" );
 	}
 
+    displayTextBox(*SCREEN_WIDTH-240,0,240,250,10);
 	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,myRenderWidth,myRenderHeight , &myClip);
     PlayerNameTexture.render(gRenderer , *SCREEN_WIDTH -150 ,0);
     PlayerHealthTexture.render(gRenderer , *SCREEN_WIDTH-180 , 40 ) ; 
@@ -345,7 +346,7 @@ void Player::render( SDL_Rect &camera  )
 
     string taskdisplay = string("Tasks Pending : ") + to_string(myPendingTasks.size()) ; 
 
-    displayMyText(taskdisplay,*SCREEN_WIDTH - 150,180);
+    displayMyText(taskdisplay,*SCREEN_WIDTH - 180,180);
 }
 
 void Player::NetworkUpdate(int myStateFirst, int myStateSecond, int myXcoord , int myYcoord ,int Health , int Happiness, int Money){
@@ -367,7 +368,7 @@ void Player::renderOtherPlayer( SDL_Rect &camera   )
 	{
 		printf( "Failed to load Play er texture!\n" );
 	}
-
+    displayTextBox(0,0,240,250,10);
 	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,myRenderWidth,myRenderHeight , &myClip);
     PlayerNameTexture.render(gRenderer , 34 , 0 );
     PlayerHealthTexture.render(gRenderer , 4 , 40 ) ; 
@@ -393,16 +394,40 @@ void Player::renderOtherPlayer( SDL_Rect &camera   )
     displayMyText(taskdisplay,4,180);
 }
 
-void Player::pauseStateChart(){
+void Player::showPauseStateChart(){
+
+        displayTextBox(0 , 0 ,200 ,300 , 10);
+        string name = string("Player Name : ") + myName;
+        displayMyText(name,5 ,5);
+        string healthval = string("Player Health : ")+ to_string((int)myHealth);
+        displayMyText(healthval , 5 ,40) ; 
+
+        string happinessval = string("Player Happiness : ")+ to_string((int)myHappiness);
+        displayMyText(happinessval , 5 ,80) ; 
+
+        string moneyval = string("Player Money : ")+ to_string((int)myMoney);
+        displayMyText(moneyval , 5 ,120) ; 
+
+        string playerspeed = string("Player Speed : ")+to_string(Player_VEL);
+        displayMyText(playerspeed , 5 ,160);\
+
+        displayTextBox(*SCREEN_WIDTH-200,0,200,300,21);
+
+
+        displayMyText("Tasks Pending :",*SCREEN_WIDTH-180 , 6);
+
+        int i=1;
+        for(auto it=myPendingTasks.begin() ; it!=myPendingTasks.end();it++){
+        displayMyText((tasks[(*it)]).first,*SCREEN_WIDTH-300,40*i);i++;}
 
 }
 
-void Player:: displayTextBox(int textBoxX, int textBoxY, int textBoxWidth, int textBoxHeight){
+void Player:: displayTextBox(int textBoxX, int textBoxY, int textBoxWidth, int textBoxHeight ,Uint8 alpha){
 
     // SDL_Rect textbox = {(int)(((double)(*SCREEN_WIDTH)) * textBoxX), (int)(((double)(*SCREEN_HEIGHT)) * textBoxY), (int)(((double)(*SCREEN_WIDTH)) * textBoxWidth), (int)(((double)(*SCREEN_HEIGHT)) * textBoxHeight)};
     SDL_Rect textbox = {textBoxX , textBoxY , textBoxWidth , textBoxHeight};
 
-    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, alpha);
     SDL_RenderFillRect(gRenderer, &textbox);
 }
 

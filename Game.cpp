@@ -740,6 +740,7 @@ int main( int argc, char* args[] )
 				player2.setName(player2name);
 				if(!bgplaying)
 				{Mix_PlayMusic( BackgroundMusic, -1);bgplaying=true;gameStartButton.close();}
+				if(bgplaying && Mix_PausedMusic()==1){Mix_ResumeMusic();}
 				// Mix_PlayChannel( -1, mySound, 1 );
 				
 
@@ -811,6 +812,7 @@ int main( int argc, char* args[] )
 			}
 
 			else if(gameState==2){
+				if(Mix_PausedMusic()!=1){Mix_PauseMusic();}
 				
 				
 				while( SDL_PollEvent( &e ) != 0)

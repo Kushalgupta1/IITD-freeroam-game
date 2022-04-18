@@ -880,6 +880,8 @@ int main(int argc, char *args[])
                         bgplaying = true;
                         gameStartButton.close();
                     }
+                    				if(bgplaying && Mix_PausedMusic()==1){Mix_ResumeMusic();}
+
                     // Mix_PlayChannel( -1, mySound, 1 );
 
                     while (SDL_PollEvent(&e) != 0)
@@ -951,6 +953,7 @@ int main(int argc, char *args[])
 
                 else if (gameState == 2)
                 {
+                    if(Mix_PausedMusic()!=1){Mix_PauseMusic();}
 
                     while (SDL_PollEvent(&e) != 0)
                     {
@@ -973,7 +976,6 @@ int main(int argc, char *args[])
 
                     if (!gWindow.isMinimized())
                     {
-
                         SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
                         SDL_RenderClear(gRenderer);
                         if (gWindow.mWidth == 640 && gWindow.mHeight == 480)
@@ -981,6 +983,7 @@ int main(int argc, char *args[])
                         else
                             Textures[1].render(gRenderer, 0, 0, gWindow.mWidth, gWindow.mHeight);
                         gameResumeButton.render();
+                        player1.showPauseStateChart();
                         SDL_RenderPresent(gRenderer);
                     }
 

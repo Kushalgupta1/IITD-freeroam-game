@@ -22,7 +22,7 @@
 class Player
 {
     public:
-		 const std::map<int,std::pair<std::string,int>> tasks = 
+		  std::map<int,std::pair<std::string,int>> tasks = 
 		 { {1,{ "Take Ball from SAC and Drop at Main Ground",30}} ,
 		 { 2 , {"Take book from LHC and pass to main library",30}} , 
 		 { 3 ,{"Take part in chess tournament in Karakoram" ,30}} ,
@@ -48,7 +48,7 @@ class Player
 
 		std::set<int> myPendingTasks ; 
 
-		void displayTextBox(int textBoxX, int textBoxY, int textBoxWidth, int textBoxHeight);
+		void displayTextBox(int textBoxX, int textBoxY, int textBoxWidth, int textBoxHeight , Uint8 alpha);
 
 		void displayMyText( std::string sentence,  int sentenceX, int sentenceY);
 
@@ -74,7 +74,8 @@ class Player
 		int myRenderHeight;
 		int myBestState;
 
-		void pauseStateChart();
+		void showPauseStateChart();
+		// void pauseStateChartOther();
 		
 		string myName ;
 

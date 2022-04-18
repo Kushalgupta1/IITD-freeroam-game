@@ -865,7 +865,7 @@ int main(int argc, char *args[])
 						gameStartButton.close();
 					}
 					// Mix_PlayChannel( -1, mySound, 1 );
-
+						if(bgplaying && Mix_PausedMusic()==1){Mix_ResumeMusic();}
 					while (SDL_PollEvent(&e) != 0)
 					{
 						// User requests quit
@@ -935,7 +935,7 @@ int main(int argc, char *args[])
 
 				else if (gameState == 2)
 				{
-
+					if(Mix_PausedMusic()!=1){Mix_PauseMusic();}
 					while (SDL_PollEvent(&e) != 0)
 					{
 						// User requests quit
@@ -965,6 +965,7 @@ int main(int argc, char *args[])
 						else
 							Textures[1].render(gRenderer, 0, 0, gWindow.mWidth, gWindow.mHeight);
 						gameResumeButton.render();
+						player1.showPauseStateChart();
 						SDL_RenderPresent(gRenderer);
 					}
 
