@@ -149,6 +149,7 @@ void toNetwork(char *buffer, struct Info *mydata)
     std::sprintf(buffer + 27, "%03d", mydata->money);
     buffer[31] = '#';
 }
+bool iWonTheGame=true;
 
 bool fromNetwork(char *buffer, struct Info *indata)
 {
@@ -990,6 +991,18 @@ int main(int argc, char *args[])
                 } // Pause music , show tasks pending , can go to state 1 by pressing resume button
                 else if (gameState == 3)
                 {
+                    Mix_HaltMusic();
+                    if(!iWonTheGame){
+                        string displayText = player2name+string(" Won the Game \n.Better Luck Next Time.") ; 
+
+                    player1.displayMyText(displayText,500,300);
+                    SDL_RenderPresent(gRenderer);}
+                    else{
+                         string displayText = string(" Hurray , you won the game") ; 
+                        player1.displayMyText(displayText,500,300);
+                        SDL_RenderPresent(gRenderer);
+                    }
+
                 } // Game over , display winner.
 
                 ++countedFrames;
@@ -1035,6 +1048,8 @@ int main(int argc, char *args[])
                     else if (bytes_sent != 32)
                         cout << "complete data not sent, what is going on???????\n";
                 }
+
+                    if(player2gameState==3){gameState=3;iWonTheGame=false;}
 
                     // If frame finished early
                     int frameTicks = capTimer.getTicks();

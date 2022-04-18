@@ -66,6 +66,7 @@ std::string message = " Hello ";
 // Starts up SDL and creates window
 bool init();
 
+bool iWonTheGame=true;
 // Loads media
 bool loadMedia(Tile *TilesLayer1[], Tile *TilesLayer2[], Tile *TilesLayer3[]);
 
@@ -971,8 +972,20 @@ int main(int argc, char *args[])
 
 				} // Pause music , show tasks pending , can go to state 1 by pressing resume button
 				else if (gameState == 3)
-				{
-				} // Game over , display winner.
+                {
+                    Mix_HaltMusic();
+                    if(!iWonTheGame){
+                        string displayText = player2name+string(" Won the Game \n.Better Luck Next Time.") ; 
+
+                    player1.displayMyText(displayText,500,300);
+                    SDL_RenderPresent(gRenderer);}
+                    else{
+                         string displayText = string(" Hurray , you won the game") ; 
+                        player1.displayMyText(displayText,500,300);
+                        SDL_RenderPresent(gRenderer);
+                    }
+
+                } // Game over , display winner.
 
 				++countedFrames;
 
@@ -1018,6 +1031,7 @@ int main(int argc, char *args[])
 			}
 		}
 
+                if(player2gameState==3){gameState=3;iWonTheGame=false;}
 				// If frame finished early
 				int frameTicks = capTimer.getTicks();
 				if (frameTicks < SCREEN_TICK_PER_FRAME)
