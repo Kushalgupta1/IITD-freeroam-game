@@ -9,6 +9,7 @@
 #include "Player.h"
 #include <utility>
 #include<cstdlib>
+#include <time.h>
 
 
 void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string* GameMessage , int CycleX , int CycleY , int PlayerSpriteWidth , int PlayerSpriteHeight , int PlayerRenderHeight , int PlayerRenderWidth , string SpriteSheet , int bestState , string myname , string myFontFile)
@@ -41,6 +42,7 @@ void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , s
     int numtasks = 0 ; 
     int x;
     //initialise the tasks the player tasks to be performed . 
+    srand(time(0));
     while(numtasks<5){
         x=1 + (rand()%5);
         if(myPendingTasks.find(x)!=myPendingTasks.end()){}
