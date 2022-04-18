@@ -85,7 +85,7 @@ bool checkCollision(SDL_Rect a, SDL_Rect b);
 bool setTiles(Tile *TilesLayer1[], Tile *TilesLayer2[], Tile *TilesLayer3[]);
 
 int gameState = 0; // State =0  is for not started, state=1 is for started .
-int player2gameState = 0 ; 
+int player2gameState = 0;
 
 string player1name = "Enter Player Name";
 string player2name = "Enter Player Name";
@@ -671,7 +671,7 @@ int main(int argc, char *args[])
         perror("Failed to accept from client!");
         return 1;
     }
-    // fcntl(newserv_fd, F_SETFL, fcntl(newserv_fd, F_GETFL, 0) | O_NONBLOCK);
+    fcntl(newserv_fd, F_SETFL, fcntl(newserv_fd, F_GETFL, 0) | O_NONBLOCK);
 
     inet_ntop(AF_INET, &cli_addr.sin_addr, cli_ip, INET_ADDRSTRLEN);
     cout << "Server received connections from " << cli_ip << "\n";
@@ -840,8 +840,10 @@ int main(int argc, char *args[])
                             if (bytes_recvd == -1 && flag == 0)
                             {
                                 memset(&cname, 0, sizeof(cname));
-                                cout << "Could not ACQUIRE Player Information!" << "\n"
-                                     << "Trying again..." << "\n";
+                                cout << "Could not ACQUIRE Player Information!"
+                                     << "\n"
+                                     << "Trying again..."
+                                     << "\n";
                                 continue;
                             }
                             else
@@ -850,9 +852,11 @@ int main(int argc, char *args[])
                                 bytes_sent = send(newserv_fd, &sname, sizeof(sname), 0);
                                 if (bytes_sent == -1)
                                     cout << "Could not SEND Player Data!"
-                                         << "Trying Again..." << "\n";
+                                         << "Trying Again..."
+                                         << "\n";
                                 else
-                                    cout << cname << " has joined the game." << "\n";
+                                    cout << cname << " has joined the game."
+                                         << "\n";
                                 player2name = cname;
                             }
                         } while (bytes_recvd == -1 || bytes_sent == -1);
@@ -965,68 +969,62 @@ int main(int argc, char *args[])
 
                 ++countedFrames;
 
-            if( (gameState != 0) && (countedFrames %3 <10) ) {
-                // receiving
-                do
+                if ((gameState != 0) && (countedFrames % 3 < 10))
                 {
+                    // receiving
                     bytes_recvd = recv(newserv_fd, &in_buffer, sizeof(in_buffer), 0);
                     if (bytes_recvd == -1)
-                        cout << "Frame data not received!" << "\n"
-                             << "Trying Again..." << "\n";
+                        cout << "Frame data not received!"
+                             << "\n";
 
                     else if (bytes_recvd != 32)
                         cout << "complete data not received, what is going on!!!\n";
 
-                    else     
-
+                    else
+                    {
                         validate_data = fromNetwork(in_buffer, &indata);
                         if (!validate_data)
-                        {
                             cout << "Wrong data received\n";
-                            bytes_recvd = -1;
+
+                        else
+                        {
+                            player2.myState.first = indata.stateFirst;
+                            player2.myState.second = indata.stateSecond;
+                            player2.mBox.x = indata.myXcoord;
+                            player2.mBox.y = indata.myYcoord;
+                            player2gameState = indata.myState;
+                            player2.myHealth = indata.health;
+                            player2.myHappiness = indata.happiness;
+                            player2.myMoney = indata.money;
                         }
+                    }
 
-                } while (bytes_recvd != 32);
-                player2.myState.first = indata.stateFirst;
-                player2.myState.second = indata.stateSecond;
-                player2.mBox.x = indata.myXcoord;
-                player2.mBox.y = indata.myYcoord;
-                player2gameState = indata.myState;
-                player2.myHealth = indata.health;
-                player2.myHappiness = indata.happiness;
-                player2.myMoney = indata.money;
+                    // sending
+                    mydata = {player1.getMyStateFirst(), player1.getMyStateSecond(), player1.mBox.x, player1.mBox.y, gameState, (int)player1.myHealth, (int)player1.myHappiness, (int)player1.myMoney};
 
-                // sending
-                mydata = {player1.getMyStateFirst(), player1.getMyStateSecond(), player1.mBox.x, player1.mBox.y, gameState, (int)player1.myHealth, (int)player1.myHappiness, (int)player1.myMoney};
-
-                toNetwork(out_buffer, &mydata);
-                do
-                {
+                    toNetwork(out_buffer, &mydata);
                     bytes_sent = send(newserv_fd, &out_buffer, sizeof(out_buffer), 0);
                     if (bytes_sent == -1)
-                        cout << "Frame data not sent!" << "\n"
-                             << "Trying Again...";
-
+                        cout << "Frame data not sent" << "\n"; 
                     else if (bytes_sent != 32)
                         cout << "complete data not sent, what is going on???????\n";
-                } while (bytes_sent != 32);
-            }
-
-                //If frame finished early
-                int frameTicks = capTimer.getTicks();
-                if (frameTicks < SCREEN_TICK_PER_FRAME)
-                {
-                    // Wait remaining time
-                    SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
                 }
-                printf("Width is %d , and height is %d \n" ,gWindow.mWidth ,gWindow.mHeight );
-            }
-        }
 
-        // Free resources and close SDL
-        close(tileset1, tileset2);
+                    // If frame finished early
+                    int frameTicks = capTimer.getTicks();
+                    if (frameTicks < SCREEN_TICK_PER_FRAME)
+                    {
+                        // Wait remaining time
+                        SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
+                    }
+                    printf("Width is %d , and height is %d \n", gWindow.mWidth, gWindow.mHeight);
+            }
+
+            // Free resources and close SDL
+            close(tileset1, tileset2);
+        }
+        close(serv_fd);
+        close(newserv_fd);
+        return 0;
     }
-    close(serv_fd);
-    close(newserv_fd);
-    return 0;
 }
