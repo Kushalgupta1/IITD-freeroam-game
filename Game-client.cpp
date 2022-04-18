@@ -241,10 +241,10 @@ bool init()
 					success = false;
 				}
 
-				player1.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 9, 4, 64, 64, 64, 64, "player2.png", 4, " ");
+				player1.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 9, 4, 64, 64, 64, 64, "player2.png", 4, " ","EvilEmpire-4BBVK.ttf");
 				player1.mBox.x=500;
 				player1.mBox.y=10;
-				player2.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 12, 4, 95, 159, 80, 48, "SpritePlayer1.png", 4, " ");
+				player2.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 12, 4, 95, 159, 80, 48, "SpritePlayer1.png", 4, " ","EvilEmpire-4BBVK.ttf");
 				SDL_StartTextInput();
 			}
 		}
@@ -806,13 +806,13 @@ int main(int argc, char *args[])
 							if (player1name != "")
 							{
 								// Render new text
-								displayText(gRenderer, player1name, gWindow.mWidth, gWindow.mHeight, 0.40, 0.15, 0.5, 0.10, 0.43, 0.13);
+                        displayText(gRenderer,player1name,gWindow.mWidth,gWindow.mHeight, 0.25,0.15,0.5,0.10,0.32,0.17);
 							}
 							// Text is empty
 							else
 							{
 								// Render space texture
-								displayText(gRenderer, " ", gWindow.mWidth, gWindow.mHeight, 0.40, 0.15, 0.5, 0.10, 0.43, 0.57);
+                        displayText(gRenderer," ",gWindow.mWidth,gWindow.mHeight, 0.25,0.15,0.5,0.10,0.32,0.17);
 							}
 						}
 

@@ -11,7 +11,9 @@
 #include "functions.h"
 #include "tile.h"
 #include <utility>
+#include <set>
 #include <map>
+#include<cstdlib>
 
 // #include "camera.h"
 
@@ -42,9 +44,13 @@ class Player
 
 
 		
+		TTF_Font *myFont = NULL ; 
 
+		std::set<int> myPendingTasks ; 
 
+		void displayTextBox(int textBoxX, int textBoxY, int textBoxWidth, int textBoxHeight);
 
+		void displayMyText( std::string sentence,  int sentenceX, int sentenceY);
 
 		bool* processGoingOn=NULL;
         int* SCREEN_WIDTH ;
@@ -68,16 +74,20 @@ class Player
 		int myRenderHeight;
 		int myBestState;
 
+		void pauseStateChart();
+		
 		string myName ;
 
-		void Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string* GameMessage , int CycleX , int CycleY , int PlayerSpriteWidth , int PlayerSpriteHeight , int PlayerRenderHeight , int PlayerRenderWidth , string SpriteSheet , int bestState , std::string myname);
+		void Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string* GameMessage , int CycleX , int CycleY , int PlayerSpriteWidth , int PlayerSpriteHeight , int PlayerRenderHeight , int PlayerRenderWidth , string SpriteSheet , int bestState , std::string myname , string myFontFile);
 		//Maximum axis velocity of the Player
 		int Player_VEL =10;
+
+		
 
         functions myfunctions  ;
 
 		SDL_Color textColor = { 0, 0, 0 }; // setting color to black , you may even keep different colors for Happiness and health 
-		TTF_Font *myFont = NULL ;
+		
 
 		void setProcess(bool *p);
 		LTexture  PlayerBodyTexture  ; 

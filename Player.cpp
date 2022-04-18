@@ -8,9 +8,10 @@
 #include <SDL2/SDL_ttf.h>
 #include "Player.h"
 #include <utility>
+#include<cstdlib>
 
 
-void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string* GameMessage , int CycleX , int CycleY , int PlayerSpriteWidth , int PlayerSpriteHeight , int PlayerRenderHeight , int PlayerRenderWidth , string SpriteSheet , int bestState , string myname)
+void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string* GameMessage , int CycleX , int CycleY , int PlayerSpriteWidth , int PlayerSpriteHeight , int PlayerRenderHeight , int PlayerRenderWidth , string SpriteSheet , int bestState , string myname , string myFontFile)
 {
     //Initialize the collision box
     mBox.x = 0;
@@ -30,7 +31,22 @@ void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , s
     mySpriteSheet = SpriteSheet;
     gRenderer = myRenderer ; 
     myName=myname;
+    myFont = TTF_OpenFont(myFontFile.c_str(), 35);
+    if (myFont == NULL)
+    {
+        printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+    }
 
+
+    int numtasks = 0 ; 
+    int x;
+    //initialise the tasks the player tasks to be performed . 
+    while(numtasks<5){
+        x=1 + (rand()%5);
+        if(myPendingTasks.find(x)!=myPendingTasks.end()){}
+        else{myPendingTasks.insert(x);numtasks++;}
+
+    }
 
     if (TTF_Init()==-1){
         printf("Failed to Initialise Player");
@@ -143,8 +159,11 @@ void Player::handleEvent( SDL_Event& e , Tile *tiles[])
         switch(e.key.keysym.sym)
         {   
             case SDLK_DOWN : if(myState.first == 0) myState.second+=1 ;else myState={0,myBestState};break;
+
             case SDLK_LEFT : if(myState.first == 1) myState.second+=1;else myState={1,myBestState};break;
+
             case SDLK_RIGHT : if(myState.first == 2) myState.second+=1;else myState={2,myBestState};break;
+            
             case SDLK_UP : if(myState.first ==3) myState.second+=1;else myState={3,myBestState};break;
 
             
@@ -169,13 +188,13 @@ void Player::handleEvent( SDL_Event& e , Tile *tiles[])
     {
         //Adjust the velocity
 
-        // switch(e.key.keysym.sym)
-        // {
-        //     case SDLK_DOWN : myState={0,4};break;
-        //     case SDLK_LEFT : myState={1,4};break;
-        //     case SDLK_RIGHT : myState={2,4};break;
-        //     case SDLK_UP : myState={3,4};break;
-        // }
+        switch(e.key.keysym.sym)
+        {
+            case SDLK_DOWN : myState={0,4};break;
+            case SDLK_LEFT : myState={1,4};break;
+            case SDLK_RIGHT : myState={2,4};break;
+            case SDLK_UP : myState={3,4};break;
+        }
 
         // if (myState.second <0 ) myState.second+=12; 
         // if(myState.second>12) myState.second-=12;
@@ -323,6 +342,10 @@ void Player::render( SDL_Rect &camera  )
 
      SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0x00, 0xFF );		
     SDL_RenderFillRect( gRenderer, &MoneyBar );
+
+    string taskdisplay = string("Tasks Pending : ") + to_string(myPendingTasks.size()) ; 
+
+    displayMyText(taskdisplay,*SCREEN_WIDTH - 150,180);
 }
 
 void Player::NetworkUpdate(int myStateFirst, int myStateSecond, int myXcoord , int myYcoord ,int Health , int Happiness, int Money){
@@ -364,9 +387,47 @@ void Player::renderOtherPlayer( SDL_Rect &camera   )
 
      SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0x00, 0xFF );		
     SDL_RenderFillRect( gRenderer, &MoneyBar );
+
+    string taskdisplay = string("Tasks Pending : ") + to_string(myPendingTasks.size()) ; 
+
+    displayMyText(taskdisplay,4,180);
 }
 
+void Player::pauseStateChart(){
 
+}
+
+void Player:: displayTextBox(int textBoxX, int textBoxY, int textBoxWidth, int textBoxHeight){
+
+    // SDL_Rect textbox = {(int)(((double)(*SCREEN_WIDTH)) * textBoxX), (int)(((double)(*SCREEN_HEIGHT)) * textBoxY), (int)(((double)(*SCREEN_WIDTH)) * textBoxWidth), (int)(((double)(*SCREEN_HEIGHT)) * textBoxHeight)};
+    SDL_Rect textbox = {textBoxX , textBoxY , textBoxWidth , textBoxHeight};
+
+    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderFillRect(gRenderer, &textbox);
+}
+
+void Player::displayMyText( std::string sentence,  int sentenceX, int sentenceY)
+{
+    LTexture myTexture;
+    SDL_Color textColor = {0, 0, 0};
+    if (!myTexture.loadFromRenderedText(sentence, textColor, myFont, gRenderer))
+    {
+        printf("Error in loading texture for string %s", sentence);
+    }
+
+    
+
+    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    
+    // myTexture.render(gRenderer,WindowWidth/3 , WindowHeight*9/10, WindowWidth/3 , WindowHeight/11 );
+
+    // myTexture.render(gRenderer, (int)(((double)(*SCREEN_WIDTH)) * sentenceX), (int)(((double)(*SCREEN_HEIGHT)) * sentenceY));
+    
+
+     myTexture.render(gRenderer, sentenceX,sentenceY);
+
+    myTexture.free();
+}
 void Player::close(){
     PlayerBodyTexture.free();
     PlayerHealthTexture.free();

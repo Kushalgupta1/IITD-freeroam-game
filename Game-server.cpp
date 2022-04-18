@@ -242,8 +242,8 @@ bool init()
                     success = false;
                 }
 
-                player1.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 12, 4, 95, 159, 80, 48, "SpritePlayer1.png", 4, " ");
-                player2.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 9, 4, 64, 64, 64, 64, "player2.png", 4, " ");
+                player1.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 12, 4, 95, 159, 80, 48, "SpritePlayer1.png", 4, " ","EvilEmpire-4BBVK.ttf");
+                player2.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 9, 4, 64, 64, 64, 64, "player2.png", 4, " ","EvilEmpire-4BBVK.ttf");
                 player2.mBox.x = 500;
                 player2.mBox.y = 10;
                 SDL_StartTextInput();
@@ -750,7 +750,7 @@ int main(int argc, char *args[])
                 // Start cap timer
                 capTimer.start();
                 // Handle events on queue
-
+                
                 if (gameState == 0)
                 {
                     while (SDL_PollEvent(&e) != 0)
@@ -820,13 +820,13 @@ int main(int argc, char *args[])
                             if (player1name != "")
                             {
                                 // Render new text
-                                displayText(gRenderer, player1name, gWindow.mWidth, gWindow.mHeight, 0.40, 0.15, 0.5, 0.10, 0.43, 0.13);
+                        displayText(gRenderer,player1name,gWindow.mWidth,gWindow.mHeight, 0.25,0.15,0.5,0.10,0.32,0.17);
                             }
                             // Text is empty
                             else
                             {
                                 // Render space texture
-                                displayText(gRenderer, " ", gWindow.mWidth, gWindow.mHeight, 0.40, 0.15, 0.5, 0.10, 0.43, 0.57);
+                        displayText(gRenderer," ",gWindow.mWidth,gWindow.mHeight, 0.25,0.15,0.5,0.10,0.32,0.17);
                             }
                         }
 
@@ -1044,10 +1044,10 @@ int main(int argc, char *args[])
             }
 
             // Free resources and close SDL
-            close(tileset1, tileset2);
         }
+            close(tileset1, tileset2);
+    }
         close(serv_fd);
         close(newserv_fd);
         return 0;
-    }
 }
