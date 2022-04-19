@@ -245,8 +245,12 @@ bool init()
 
                 player1.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 12, 4, 95, 159, 80, 48, "SpritePlayer1.png", 4, " ","EvilEmpire-4BBVK.ttf");
                 player2.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 9, 4, 64, 64, 64, 64, "player2.png", 4, " ","EvilEmpire-4BBVK.ttf");
-                player2.mBox.x = 500;
-                player2.mBox.y = 10;
+                player1.mBox.x=1500;
+                player1.mBox.y=100;
+                
+                player2.mBox.x = 1600;
+
+                player2.mBox.y = 100;
                 SDL_StartTextInput();
             }
         }
@@ -903,6 +907,7 @@ int main(int argc, char *args[])
                         if (!gWindow.isMinimized() && !processGoingOn)
                         {
                             player1.handleEvent(e, tileset3);
+                            if(player1.myPendingTasks.size()==0){gameState=3;}
                         }
                         gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);

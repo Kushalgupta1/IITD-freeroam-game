@@ -150,9 +150,9 @@ class Player
 		SDL_Rect mBox;
 		int getMyStateFirst();
 		int getMyStateSecond();
-		double myHealth=30; 
-		double myHappiness=50;
-		double myMoney = 100 ; 
+		double myHealth=120; 
+		double myHappiness=120;
+		double myMoney = 120 ; 
 
 		pair<int,int> myState ={2,4}; 
     private:
@@ -188,7 +188,8 @@ class Player
 		void PickBall();
 		void DropBall();
 		void BuyGroceries();
-		
+		void Hospital();
+
 
 		std::string *message ; 
 

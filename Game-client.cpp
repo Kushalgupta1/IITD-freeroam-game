@@ -243,8 +243,12 @@ bool init()
 				}
 
 				player1.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 9, 4, 64, 64, 64, 64, "player2.png", 4, " ","EvilEmpire-4BBVK.ttf");
-				player1.mBox.x=500;
-				player1.mBox.y=10;
+				player1.mBox.x=1600;
+				player1.mBox.y=100;
+                
+                player2.mBox.x = 1500;
+
+                player2.mBox.y = 100;
 				player2.Constructor(gRenderer, &gWindow.mWidth, &gWindow.mHeight, &message, 12, 4, 95, 159, 80, 48, "SpritePlayer1.png", 4, " ","EvilEmpire-4BBVK.ttf");
 				SDL_StartTextInput();
 			}
@@ -522,7 +526,7 @@ bool setTiles(Tile *TilesLayer1[], Tile *TilesLayer2[], Tile *TilesLayer3[])
 	y = 0;
 
 	// Open the map
-	std::ifstream map3("campus_layer4.txt");
+	std::ifstream map3("campus_layer4final.txt");
 
 	// If the map couldn't be loaded
 	if (map3.fail())
@@ -883,6 +887,7 @@ int main(int argc, char *args[])
 						if (!gWindow.isMinimized() && !processGoingOn)
 						{
 							player1.handleEvent(e, tileset3);
+							if(player1.myPendingTasks.size()==0){gameState=3;}
 						}
 						 gameStartButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
 					gameInfoButton.UpdateParameters(gWindow.mWidth,gWindow.mHeight);
@@ -894,7 +899,7 @@ int main(int argc, char *args[])
 					gameVolumeOnButton.handleEvent(&e,8);
 					if(gameState==8) {gameState=1 ; if(Mix_PausedMusic()==1) Mix_ResumeMusic(); }
 					gameVolumeDownButton.handleEvent(&e,8);
-					if(gameState==8) {printf("sizmo");gameState=1 ; if(Mix_PausedMusic()!=1) Mix_PauseMusic(); }
+					if(gameState==8) {gameState=1 ; if(Mix_PausedMusic()!=1) Mix_PauseMusic(); }
 					gameState=store;
 					gameInfoButton.handleEvent(&e , 2); 
 					}

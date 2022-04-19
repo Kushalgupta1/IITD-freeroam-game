@@ -10,6 +10,7 @@
 #include <utility>
 #include<cstdlib>
 #include <time.h>
+#include <set>
 
 
 void Player::Constructor(SDL_Renderer* myRenderer , int* width , int* height , std::string* GameMessage , int CycleX , int CycleY , int PlayerSpriteWidth , int PlayerSpriteHeight , int PlayerRenderHeight , int PlayerRenderWidth , string SpriteSheet , int bestState , string myname , string myFontFile)
@@ -219,13 +220,68 @@ if(onSpecialSquare(tiles)){
     if((e.type==SDL_KEYDOWN) && (e.key.keysym.sym==SDLK_1)){
         switch(onSpecialSquare(tiles))
         {
-            case 1 : if(!hasYulu)GetYulu(); else DropYulu(); break;
-            case 2 : EatFood(0);break;
+            case 1 : EatFood(0);break;
+            case 2 : if(!hasYulu)GetYulu(); else DropYulu(); break;
+            case 3 : if(hasGroceries) GiveGroceries() ; break ; 
+            case 4 : if(hasMedicines)GiveMeds();break;
+            case 6 : DoCP();break;
+            case 7 : DoSinging();break;
+            case 9 : DoDrama();break;
+            case 10 : DoDebating();break;
+            case 11 : DoDance();break;
+            case 13 :  DoRest();break;
+            case 14 : EatFood(2);break;
+            case 17:  EatFood(1);break;
+            case 18: EatFood(1);break;
+            case 20 :DoProject();break;
+            case 21 :EatFood(1);break;
+            case 22 : DoGymming();break;
+            case 23 : DoStartup();break;
+            case 24 : EatFood(1);break;
+            case 25 : if(!hasBook)PickBook();break;
+            case 26 : Play();break;
+            case 27 : if(hasBook)DropBook();break;
+            case 28 : Play();break;
+            case 29 : EatFood(1);break;
+            case 30 : DoLitQuiz();break;
+            case 32 : EatFood(1);break;
+            case 33 : if(!hasMedicines && myMoney>20)PickMeds();break ; 
+            case 34 : Hospital(); break;
+            case 35 : PlayChess();break;
+            case 36 :EatFood(1);break;
+            case 37 : DoRest();break;
+            case 38 : if(hasBall)DropBall();break;
+            case 39 : if(hasBall)DropBall();break;
+            case 40 : if(hasBall)DropBall();break;
+            case 41 : if(hasBall)DropBall();break;
+            case 42 : if(hasBall)DropBall();break;
+            case 44 : if(hasBall)DropBall();break;
+            case 45 : EatFood(1);break;
+            case 46 :if(!hasBall)PickBall();break;
+            case 48 : BuyGroceries();break;
+
+        }}
+
+    if((e.type==SDL_KEYDOWN) && (e.key.keysym.sym==SDLK_2)){
+        switch(onSpecialSquare(tiles))
+        {
+            case 1 : EatFood(0);break;
+            case  43: Sleep(); break;
+            case 38 : Play();break;
+            case 39 : Play();break;
+            case 40 : Play();break;
+            case 41 : Play();break;
+            case 42 : Play();break;
+            case 44 : Play();break;
             
         }
     }
+
     }
+    
+    
 }
+
 
 void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] , SDL_Rect player2)
 {   
@@ -297,11 +353,11 @@ void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] , SDL_Rect player
             case 35 : *message = "KARAKORAM : Press 1 to play chess";  break ;
             case 36 : *message = "STAFF CANTEEN : Press 1 to have food"; break ;
             case 37 : *message  = "NALANDA GROUND : Press 1 to relax here";break ;
-            case 38 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
-            case 39 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
-            case 40 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
-            case 41 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
-            case 42 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
+            case 38 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball , Press 2 to play";} else{"MAIN GROUND : Press 2 to play";}break ;
+            case 39 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball , Press 2 to play";} else{"MAIN GROUND : Press 2 to play";}break ;
+            case 40 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball , Press 2 to play";} else{"MAIN GROUND : Press 2 to play";}break ;
+            case 41 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball , Press 2 to play";} else{"MAIN GROUND : Press 2 to play";}break ;
+            case 42 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball , Press 2 to play";} else{"MAIN GROUND : Press 2 to play";}break ;
             case 43 : *message = "NILGIRI : Press 1 to do Quizzing , Press 2 to sleep"; break ;
             case 44 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
             case 45 : *message= "NILGIRI NIGHT MESS : Press 1 to have food"  ;break ;
@@ -315,12 +371,18 @@ void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] , SDL_Rect player
     
     if(spending){
         myMoney+=mSpendRate;
+        if(myMoney>150){myMoney=150;}
+        if(myMoney<1){myMoney=0;}
     }
     if(happying){
         myHappiness+=mHappyRate;
+        if(myHappiness>150){myHappiness=150;}
+        if(myHappiness<1){myHappiness=0;}
     }
     if(recharging){
         myHealth+=mRechargeRate;
+        if(myHealth>150){myHealth=150;}
+        if(myHealth<1){myHealth=0;}
     }
 }
 
@@ -374,15 +436,15 @@ void Player::render( SDL_Rect &camera  )
 
     displayTextBox(*SCREEN_WIDTH-240,0,240,250,10);
 	(PlayerBodyTexture).render(gRenderer, mBox.x - (camera).x, mBox.y - (camera).y ,myRenderWidth,myRenderHeight , &myClip);
-    PlayerNameTexture.render(gRenderer , *SCREEN_WIDTH -150 ,0);
-    PlayerHealthTexture.render(gRenderer , *SCREEN_WIDTH-180 , 40 ) ; 
-    PlayerHappinessTexture.render(gRenderer, *SCREEN_WIDTH-204, 80);
-    PlayerMoneyTexture.render(gRenderer,*SCREEN_WIDTH-180 , 140) ; 
+    PlayerNameTexture.render(gRenderer , *SCREEN_WIDTH -200 ,0);
+    PlayerHealthTexture.render(gRenderer , *SCREEN_WIDTH-230 , 40 ) ; 
+    PlayerHappinessTexture.render(gRenderer, *SCREEN_WIDTH-254, 80);
+    PlayerMoneyTexture.render(gRenderer,*SCREEN_WIDTH-230 , 140) ; 
 
 
-     HealthBar = { *SCREEN_WIDTH-104 , 45, (int)(myHealth), 20 };
-    HappinessBar= {*SCREEN_WIDTH-104 ,85, (int)(myHappiness) , 20};
-	MoneyBar= {*SCREEN_WIDTH-104 ,145, (int)(myMoney) , 20};
+     HealthBar = { *SCREEN_WIDTH-154 , 45, (int)(myHealth), 20 };
+    HappinessBar= {*SCREEN_WIDTH-154 ,85, (int)(myHappiness) , 20};
+	MoneyBar= {*SCREEN_WIDTH-154 ,145, (int)(myMoney) , 20};
     
     SDL_SetRenderDrawColor( gRenderer, 0x00, 0xFF, 0x00, 0xFF );		
     SDL_RenderFillRect( gRenderer, &HealthBar );
@@ -395,7 +457,7 @@ void Player::render( SDL_Rect &camera  )
 
     string taskdisplay = string("Tasks Pending : ") + to_string(myPendingTasks.size()) ; 
 
-    displayMyText(taskdisplay,*SCREEN_WIDTH - 180,180);
+    displayMyText(taskdisplay,*SCREEN_WIDTH - 230,180);
 }
 
 void Player::NetworkUpdate(int myStateFirst, int myStateSecond, int myXcoord , int myYcoord ,int Health , int Happiness, int Money){
@@ -445,7 +507,7 @@ void Player::renderOtherPlayer( SDL_Rect &camera   )
 
 void Player::showPauseStateChart(){
 
-        displayTextBox(0 , 0 ,200 ,300 , 10);
+        displayTextBox(0 , 0 ,300 ,250 , 10);
         string name = string("Player Name : ") + myName;
         displayMyText(name,5 ,5);
         string healthval = string("Player Health : ")+ to_string((int)myHealth);
@@ -460,7 +522,7 @@ void Player::showPauseStateChart(){
         string playerspeed = string("Player Speed : ")+to_string(Player_VEL);
         displayMyText(playerspeed , 5 ,160);\
 
-        displayTextBox(*SCREEN_WIDTH-200,0,200,300,21);
+        displayTextBox(*SCREEN_WIDTH-300,0,300,250,21);
 
 
         displayMyText("Tasks Pending :",*SCREEN_WIDTH-180 , 6);
@@ -509,15 +571,18 @@ void Player::close(){
     PlayerNameTexture.free();
 }
 
+
+
 void Player :: EatFood(int type){
     //Hostel Food for type 0 , Shop food for type 1 
     
     *processGoingOn=true;
     targetTime=(gameTimer->getTicks())+5000 ; 
     recharging=true;
-    mRechargeRate=1 ; 
-    if(type==1) mSpendRate=-1;
-	if(myHealth>100)myHealth=100;
+    mRechargeRate=0.03 ; 
+    if(type==1) mSpendRate=-0.1;
+    if(type==2) mSpendRate=-0.2;
+	
     
 }
 
@@ -525,7 +590,7 @@ void Player :: GetYulu(){
     if(!hasYulu){
     Player_VEL +=15;
     spending=true;
-    mSpendRate = -0.01;
+    mSpendRate = -0.04;
     hasYulu =true;}
 }
 void Player :: DropYulu(){
@@ -541,7 +606,7 @@ void Player::Play(){
     *processGoingOn=true;
     targetTime=(gameTimer->getTicks())+5000 ; 
     mHappyRate=0.04;
-    mRechargeRate=-0.04;
+    mRechargeRate=-0.08;
 }
 
 		
@@ -549,27 +614,155 @@ void Player::PlayChess(){
     *processGoingOn=true;
     targetTime=(gameTimer->getTicks())+5000 ; 
     mHappyRate = 0.03 ; 
-    mRechargeRate = -0.03 ;
+    mRechargeRate = -0.08 ;
+
+    auto it = myPendingTasks.find(3);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
 
 }
 void Player::Sleep(){
     *processGoingOn=true;
     targetTime=(gameTimer->getTicks())+10000 ; 
-	mRechargeRate = 0.1;
+	mRechargeRate = 0.3;
 		}
 
-void Player::Dance(){
-    *processGoingOn=true;
-    targetTime=(gameTimer->getTicks())+5000 ; 
-	mRechargeRate = -0.03;
-    mHappyRate = 0.06;
 
-		}
+        
 void Player::Quizzing(){
     *processGoingOn=true;
     targetTime=(gameTimer->getTicks())+10000 ; 
 	mRechargeRate = 0.1;
+    mHappyRate = 0.1;
+    auto it = myPendingTasks.find(5);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
     
+}
+
+void Player:: GiveGroceries(){
+    hasGroceries=false;
+    auto it = myPendingTasks.find(16);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player::GiveMeds(){
+    hasMedicines=false;
+    auto it = myPendingTasks.find(15);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player :: DoCP(){
+    *processGoingOn = true; 
+    targetTime = (gameTimer->getTicks())+10000;
+    mRechargeRate  =-0.1;
+    mSpendRate = 0.05;
+    auto it = myPendingTasks.find(13);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+
+void Player :: DoSinging(){
+    *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+5000;
+    mRechargeRate = -0.1;
+    mSpendRate = 0.05;
+    mHappyRate = 0.05;
+    auto it = myPendingTasks.find(9);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player :: DoDrama(){
+     *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+5000;
+    mRechargeRate = -0.1;
+    mSpendRate = 0.05;
+    mHappyRate = 0.05;
+    auto it = myPendingTasks.find(6);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player :: DoDebating(){
+    *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+5000;
+    mRechargeRate = -0.1;
+    mSpendRate = 0.05;
+    mHappyRate = 0.05;
+    auto it = myPendingTasks.find(14);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player :: DoDance(){
+    *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+5000;
+    mRechargeRate = -0.2;
+    mSpendRate = 0.05;
+    mHappyRate = 0.10;
+    auto it = myPendingTasks.find(1);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player :: DoRest(){
+    *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+5000;
+    mRechargeRate = 0.15;
+
+    mHappyRate = 0.08;
+}
+void Player::DoProject(){
+    *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+10000;
+    mRechargeRate = -0.02;
+    mSpendRate = 0.3;
+    mHappyRate = -0.1;
+    auto it = myPendingTasks.find(4);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player::DoGymming(){
+    *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+5000;
+    mRechargeRate = -0.2;
+    auto it = myPendingTasks.find(11);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+    
+}
+
+void Player :: DoStartup(){
+    mSpendRate=0.05;
+    auto it = myPendingTasks.find(8);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player :: PickBook(){
+    
+    hasBook=true;
+}
+void Player::DropBook(){
+    hasBook=false;
+    auto it = myPendingTasks.find(2);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player::DoLitQuiz(){
+     *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+5000;
+    mSpendRate = 0.1;
+    mHappyRate = 0.1;
+    auto it = myPendingTasks.find(7);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player :: PickMeds(){
+    hasMedicines=true;
+    myMoney-=20;
+}
+
+void Player :: Hospital(){
+     *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+10000;
+    mRechargeRate = 0.3;
+    
+}
+void Player :: PickBall(){
+    hasBall=true;
+}
+void Player :: DropBall(){
+    hasBall=false;
+    auto it = myPendingTasks.find(1);
+if(it!=myPendingTasks.end()){myPendingTasks.erase(it);}
+}
+void Player :: BuyGroceries(){
+    *processGoingOn=true;
+    targetTime = (gameTimer->getTicks())+10000;
+    mSpendRate = -0.1;
 }
 
 		// void SubmitAssignment(){
