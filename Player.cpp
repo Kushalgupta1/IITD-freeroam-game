@@ -522,14 +522,14 @@ void Player::showPauseStateChart(){
         string playerspeed = string("Player Speed : ")+to_string(Player_VEL);
         displayMyText(playerspeed , 5 ,160);\
 
-        displayTextBox(*SCREEN_WIDTH-300,0,300,250,21);
+        displayTextBox(*SCREEN_WIDTH-458,0,300,250,21);
 
 
         displayMyText("Tasks Pending :",*SCREEN_WIDTH-180 , 6);
 
         int i=1;
         for(auto it=myPendingTasks.begin() ; it!=myPendingTasks.end();it++){
-        displayMyText((tasks[(*it)]).first,*SCREEN_WIDTH-300,40*i);i++;}
+        displayMyText((tasks[(*it)]).first,*SCREEN_WIDTH-450,40*i);i++;}
 
 }
 

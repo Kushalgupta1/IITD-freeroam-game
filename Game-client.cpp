@@ -979,8 +979,11 @@ int main(int argc, char *args[])
 				else if (gameState == 3)
                 {
                     Mix_HaltMusic();
+					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+						SDL_RenderClear(gRenderer);
+
                     if(!iWonTheGame){
-                        string displayText = player2name+string(" Won the Game \n.Better Luck Next Time.") ; 
+                        string displayText = player2name+string(" Won the Game .Better Luck Next Time.") ; 
 
                     player1.displayMyText(displayText,500,300);
                     SDL_RenderPresent(gRenderer);}
