@@ -114,7 +114,7 @@ bool Player ::touchesWall(Tile* tiles[] )
     { 
         //If the tile is a wall type tile 
 		 //    if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
-        if( ( tiles[ i ]->getType() > 0 )  )
+        if( ( tiles[ i ]->getType() != 3 )  )
 		//isse upar wali line thi pehle check karne ke liye ab ye kardi faltu mein 
         {
             //If the collision box touches  the wall tile
