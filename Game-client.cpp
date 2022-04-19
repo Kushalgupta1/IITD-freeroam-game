@@ -870,7 +870,7 @@ int main(int argc, char *args[])
 						gameStartButton.close();
 					}
 					// Mix_PlayChannel( -1, mySound, 1 );
-						if(bgplaying && (Mix_PausedMusic()==1)){Mix_ResumeMusic();}
+						// if(bgplaying && (Mix_PausedMusic()==1)){Mix_ResumeMusic();}
 					while (SDL_PollEvent(&e) != 0)
 					{
 						// User requests quit

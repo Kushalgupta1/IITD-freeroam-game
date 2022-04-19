@@ -885,7 +885,7 @@ int main(int argc, char *args[])
                         bgplaying = true;
                         gameStartButton.close();
                     }
-                    if(bgplaying && Mix_PausedMusic()==1){Mix_ResumeMusic();}
+                    // if(bgplaying && Mix_PausedMusic()==1){Mix_ResumeMusic();}
                                     
 
 
