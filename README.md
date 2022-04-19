@@ -20,7 +20,7 @@ A 2-player game set in the IITD campus, made using SDL in C++. The 2 players can
 
 - The 2 players should be connected to the same Wi-Fi. The 2 players playing are the server and  the client. The server should delete the `game-client.cpp` and the client should delete the `game-server.cpp file`.
 
-- Enter the server's IP address in the `game-server.cpp` of server and `game-client.cpp` of client in the `#define SERVER_IP`.
+- Enter the server's IP address in the `game-server.cpp` of server and `game-client.cpp` of client in the `serv_ip[]`.
 
 - On the terminal, enter the command `make` to generate the executable `play`.
 
