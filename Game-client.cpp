@@ -994,6 +994,7 @@ int main(int argc, char *args[])
 						
                     }
 					sleep(10);
+					quit=true;
 
                 } // Game over , display winner.
 

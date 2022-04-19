@@ -1014,6 +1014,7 @@ int main(int argc, char *args[])
                         SDL_RenderPresent(gRenderer);
                     }
                     sleep(10);
+                    quit=true;
 
                 } // Game over , display winner.
 

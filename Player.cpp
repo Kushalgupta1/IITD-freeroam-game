@@ -255,6 +255,7 @@ if(onSpecialSquare(tiles)){
             case 40 : if(hasBall)DropBall();break;
             case 41 : if(hasBall)DropBall();break;
             case 42 : if(hasBall)DropBall();break;
+            case 43 : Quizzing();break;
             case 44 : if(hasBall)DropBall();break;
             case 45 : EatFood(1);break;
             case 46 :if(!hasBall)PickBall();break;
