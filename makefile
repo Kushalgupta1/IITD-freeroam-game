@@ -1,6 +1,7 @@
 
 
 SRC_DIR := ~/Downloads/impfiles2/cop-game-1835/cop-game
+# SRC_DIR := .
 
 SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))

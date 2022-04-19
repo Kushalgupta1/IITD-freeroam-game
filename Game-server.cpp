@@ -1013,6 +1013,7 @@ int main(int argc, char *args[])
                         player1.displayMyText(displayText,500,300);
                         SDL_RenderPresent(gRenderer);
                     }
+                    sleep(10);
 
                 } // Game over , display winner.
 

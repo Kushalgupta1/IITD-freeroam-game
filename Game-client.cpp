@@ -870,7 +870,7 @@ int main(int argc, char *args[])
 						gameStartButton.close();
 					}
 					// Mix_PlayChannel( -1, mySound, 1 );
-						if(bgplaying && Mix_PausedMusic()==1){Mix_ResumeMusic();}
+						if(bgplaying && (Mix_PausedMusic()==1)){Mix_ResumeMusic();}
 					while (SDL_PollEvent(&e) != 0)
 					{
 						// User requests quit
@@ -991,7 +991,9 @@ int main(int argc, char *args[])
                          string displayText = string(" Hurray , you won the game") ; 
                         player1.displayMyText(displayText,500,300);
                         SDL_RenderPresent(gRenderer);
+						
                     }
+					sleep(10);
 
                 } // Game over , display winner.
 
