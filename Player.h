@@ -24,7 +24,7 @@ class Player
     public:
 		  std::map<int,std::pair<std::string,int>> tasks = 
 		 { {1,{ "Take Ball from SAC and Drop at Main Ground",30}} ,
-		 { 2 , {"Take book from LHC and pass to main library",30}} , 
+		 { 2 , {"Take book from LHC and return to main library",30}} , 
 		 { 3 ,{"Take part in chess tournament in Karakoram" ,30}} ,
 		 { 4 ,{"Go to SIT and do a research project" ,50}} ,
 		 { 5 ,{"Do Quizzing in Nilgiri" ,30}} ,
@@ -42,7 +42,7 @@ class Player
 		 }; 
 		  
 
-
+		
 		
 		TTF_Font *myFont = NULL ; 
 
@@ -101,6 +101,8 @@ class Player
 		LTexture PlayerMoneyTexture;
 		LTexture PlayerNameTexture;
 
+		bool hasGroceries=false;
+		bool hasMedicines=false;
 		bool hasYulu=false;
 		bool hasAssignment =false;
 		bool hasBook =false;
@@ -166,6 +168,27 @@ class Player
 		void PlayChess();
 		void Sleep();
 		void Dance();
+		void Quizzing();
+		void GiveGroceries();
+		void GiveMeds();
+		void DoCP();
+		void DoSinging();
+		void DoDrama();
+		void DoDebating();
+		void DoDance();
+		void DoRest();
+		void DoProject();
+		void DoGymming();
+		void DoStartup();
+		void PickBook();
+		void DropBook();
+		void DoLitQuiz();
+		void PickMeds();
+		void DropMeds();
+		void PickBall();
+		void DropBall();
+		void BuyGroceries();
+		
 
 		std::string *message ; 
 

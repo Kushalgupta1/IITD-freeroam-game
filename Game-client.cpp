@@ -296,7 +296,7 @@ bool loadMedia(Tile *TilesLayer1[], Tile *TilesLayer2[], Tile *TilesLayer3[])
 	SDL_Color Black = {0, 0, 0, 0xFF};
 
 	// Load tile texture
-	if (!gTileTexture1.loadFromFile("TILESET_campus_layer1&2.png", gRenderer))
+	if (!gTileTexture1.loadFromFile("campus_layer1&2.png", gRenderer))
 	{
 		printf("Failed to load tile set texture!\n");
 		success = false;
@@ -389,7 +389,7 @@ bool setTiles(Tile *TilesLayer1[], Tile *TilesLayer2[], Tile *TilesLayer3[])
 	int x = 0, y = 0;
 
 	// Open the map
-	std::ifstream map1("TILEMAP_campus_layer1&2.txt");
+	std::ifstream map1("campus_layer1&2.txt");
 
 	// If the map couldn't be loaded
 	if (map1.fail())
@@ -522,7 +522,7 @@ bool setTiles(Tile *TilesLayer1[], Tile *TilesLayer2[], Tile *TilesLayer3[])
 	y = 0;
 
 	// Open the map
-	std::ifstream map3("TILEMAP_campus_layer4.txt");
+	std::ifstream map3("campus_layer4.txt");
 
 	// If the map couldn't be loaded
 	if (map3.fail())

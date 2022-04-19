@@ -260,8 +260,55 @@ void Player::updateParams( Tile *tileset2[] , Tile *tileset3[] , SDL_Rect player
     *message ="FreeRoam";
     if(!(*processGoingOn) && onSpecialSquare(tileset3)){
         switch(onSpecialSquare(tileset3)){
-            case 1 : if(!hasYulu){*message="Press 1 to get Yulu";} else {*message="Press 1 to Leave Yulu";} break;
-            case 2 : *message = "Press 1 to eat food"; break;
+            case 1 : *message = "UDAIGIRI : Press 1 to do Photo Editing , Press 2 to have food"; break;
+            case 2 : if(!hasYulu){*message="YULU STAND :Press 1 to get Yulu";} else {*message="YULU STAND :: Press 1 to Leave Yulu";} break;
+            case 3 : if(hasGroceries){*message = "KUMAON : Press 1 to give groceries";} else{*message="KUMAON";}  break ;
+            case 4 : if(hasMedicines){*message ="VINDHYACHAL : Press 1 to give medicines";} else {*message="VINDHYACHAL";} break ;
+            case 5 : *message="MECHANICAL DEPARTMENT";  break ;
+            case 6 : *message = "SATPURA : Press 1 to take Part in Competitive Programming Contest";  break ;
+            case 7 : *message="KAILASH : Press 1 to take Part in singing competition";  break ;
+            case 8 : *message  = "ELECTRICAL DEPARTMENT"; break ;
+            case 9 : *message   = "JWALAMUKHI : Press 1 to do Dramatics" ;break ;
+            case 10 : *message = "HIMADRI : Press 1 to do Debating"; break ;
+            case 11 : *message  = "GIRNAR : Press 1 to take part in Dance Competition"; break ;
+            case 12 : *message  = "BIOTECH DEPARTMENT" ;break ;
+            case 13 : *message  = "BIOTECH LAWN : Press 1 to Rest and Relax"; break ;
+            case 14 : *message   = "CAFE COFFEE DAY : Press 1 to have Coffee "; break ;
+            case 15 : *message   = "IIT-D MAIN BUILDING" ; break ;
+            case 16 : *message  = "TEXTILE DEPARTMENT" ;  break ;
+            case 17 : *message   = "SATPURA NIGHT MESS : Press 1 to have food" ; break ;
+            case 18 : *message  = "NESCAFE : Press 1 to have Coffee and Snacks" ; break ;
+            case 19 : *message  = "DEPARTMENT OF DESIGN"; break ;
+            case 20 : *message   = "SIT : Press 1 to do a Research Project here" ;break ;
+            case 21 : *message   = "DELHI 16 : Press 1 to have food  ";break ;
+            case 22 : *message  = "ARAVALI : Press 1 to do gymming. " ;break ;
+            case 23 : *message   = "ZANSKAR : Press 1 to work on a startup plan. ";break ;
+            case 24 : *message  = "ARAVALI NIGHT MESS : Press 1 to have juice/shake.";break ;
+            case 25 : if(!hasBook){*message  = "LECTURE HALL COMPLEX : Press 1 to take book";} else{*message="LECTURE HALL COMPLEX";}break ;
+            case 26 : *message = "VOLLEYBALL COURT: Press 1 to play";  break ;
+            case 27 : if(hasBook){*message = "LIBRARY : Press 1 to return book"; } else{*message="LIBRARY";}break ;
+            case 28 : *message = "LAWN TENNIS COURT : Press 1 to play Tennis"; break ;
+            case 29 : *message = "RAJDHANI : Press 1 to have food";  break ;
+            case 30 : *message ="SHIVALIK : Press 1 to take part in Literature Quiz"; break ;
+            case 31 : *message ="BHARTI BUILDING"; break ;
+            case 32 : *message  = "MASALA MIX : Press 1 to have snacks" ; break ;
+            case 33 : if(!hasMedicines){*message  = "APOLLO Pharma: Press 1 to pickup medicines for friend";}else{*message = "APOLLO Pharma";}break ;
+            case 34 : *message = "HOSPITAL : Press 1 to recharge health";  break ;
+            case 35 : *message = "KARAKORAM : Press 1 to play chess";  break ;
+            case 36 : *message = "STAFF CANTEEN : Press 1 to have food"; break ;
+            case 37 : *message  = "NALANDA GROUND : Press 1 to relax here";break ;
+            case 38 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
+            case 39 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
+            case 40 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
+            case 41 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
+            case 42 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
+            case 43 : *message = "NILGIRI : Press 1 to do Quizzing , Press 2 to sleep"; break ;
+            case 44 : if(hasBall) {*message  ="MAIN GROUND : Press 1 to give ball.";} else{"MAIN GROUND";}break ;
+            case 45 : *message= "NILGIRI NIGHT MESS : Press 1 to have food"  ;break ;
+            case 46 : if(!hasBall){*message = "SAC : Press 1 to take ball";} else{ "STUDENT ACTIVITY CENTER";} break ;
+            case 47 : *message = "Department of Management Studies";  break ;
+            case 48 : if(!hasGroceries){*message  = "GROCERY SHOP : Press 1 to buy groceries for friend";} else {"GROCERY SHOP";}break ;
+
         }
     }
 
@@ -478,7 +525,7 @@ void Player :: GetYulu(){
     if(!hasYulu){
     Player_VEL +=15;
     spending=true;
-    mSpendRate = -0.4;
+    mSpendRate = -0.01;
     hasYulu =true;}
 }
 void Player :: DropYulu(){
@@ -493,29 +540,37 @@ void Player :: DropYulu(){
 void Player::Play(){
     *processGoingOn=true;
     targetTime=(gameTimer->getTicks())+5000 ; 
-    mHappyRate=5;
-    mRechargeRate=-2;
+    mHappyRate=0.04;
+    mRechargeRate=-0.04;
 }
 
 		
-		void Player::PlayChess(){
-            *processGoingOn=true;
-            mHappyRate = 0.1 ; 
-            mRechargeRate = -0.2 ;
+void Player::PlayChess(){
+    *processGoingOn=true;
+    targetTime=(gameTimer->getTicks())+5000 ; 
+    mHappyRate = 0.03 ; 
+    mRechargeRate = -0.03 ;
+
+}
+void Player::Sleep(){
+    *processGoingOn=true;
+    targetTime=(gameTimer->getTicks())+10000 ; 
+	mRechargeRate = 0.1;
+		}
+
+void Player::Dance(){
+    *processGoingOn=true;
+    targetTime=(gameTimer->getTicks())+5000 ; 
+	mRechargeRate = -0.03;
+    mHappyRate = 0.06;
 
 		}
-		void Player::Sleep(){
-            *processGoingOn=true;
-            targetTime=(gameTimer->getTicks())+5000 ; 
-			mRechargeRate = 0.2;
-
-		}
-
-		void Player::Dance(){
-                *processGoingOn=true;
-            targetTime=(gameTimer->getTicks())+5000 ; 
-			mRechargeRate = 0.2;
-		}
+void Player::Quizzing(){
+    *processGoingOn=true;
+    targetTime=(gameTimer->getTicks())+10000 ; 
+	mRechargeRate = 0.1;
+    
+}
 
 		// void SubmitAssignment(){
 		// 	if(Assignments>0){Assignment-=1;}
