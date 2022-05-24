@@ -3,7 +3,9 @@
 by Kushal Kumar Gupta, 2020CS10355
 & Divyanshu Agarwal, 2020CS10343
 
-A 2-player game set in the IITD campus, made using SDL in C++. The 2 players can play by  connecting to a common Wi-Fi network.
+A 2-player game set in the IITD campus, made using SDL in C++. The 2 players can play by  connecting to a common Wi-Fi network. 
+
+See `howtoplay.pdf` for the rules of the game.
 
 #### Installation instructions (for Ubuntu):
 
